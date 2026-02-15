@@ -1,0 +1,749 @@
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  SafeAreaView,
+  RefreshControl,
+  TouchableOpacity,
+  Image,
+} from 'react-native';
+import { useAuthStore } from '../../auth/stores/authStore';
+import { useDashboardStore } from '../stores/dashboardStore';
+import { lightTheme } from '../../../theme';
+
+const DashboardScreen: React.FC = () => {
+  const { user } = useAuthStore();
+  const {
+    data: dashboardData,
+    selectedDate: storeSelectedDate,
+    isRefreshing,
+    setSelectedDate: setStoreSelectedDate,
+    refreshDashboard,
+  } = useDashboardStore();
+
+  const [selectedDate, setSelectedDate] = useState(new Date());
+
+  // Sync local selectedDate with store
+  useEffect(() => {
+    const dateString = selectedDate.toISOString().split('T')[0] || '';
+    if (dateString !== storeSelectedDate) {
+      setStoreSelectedDate(dateString);
+    }
+  }, [selectedDate, storeSelectedDate, setStoreSelectedDate]);
+
+  const today = selectedDate.toISOString().split('T')[0];
+
+  // Use dashboard data from store, fallback to default values
+  const dailyNutrition = dashboardData?.stats
+    ? {
+        totalCalories: dashboardData.stats.totalCalories,
+        targetCalories: dashboardData.stats.targetCalories,
+        remainingCalories: dashboardData.stats.remainingCalories,
+        totalProtein: dashboardData.stats.totalProtein,
+        totalCarbs: dashboardData.stats.totalCarbs,
+        totalFat: dashboardData.stats.totalFat,
+      }
+    : {
+        totalCalories: 0,
+        targetCalories: user?.targetCalories || 2712,
+        remainingCalories: user?.targetCalories || 2712,
+        totalProtein: 0,
+        totalCarbs: 0,
+        totalFat: 0,
+      };
+
+  // Generate week dates
+  const getWeekDates = () => {
+    const dates = [];
+    const startOfWeek = new Date(selectedDate);
+    const day = startOfWeek.getDay();
+    const diff = startOfWeek.getDate() - day + (day === 0 ? -6 : 1); // Monday as first day
+    startOfWeek.setDate(diff);
+
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(startOfWeek);
+      date.setDate(startOfWeek.getDate() + i);
+      dates.push(date);
+    }
+    return dates;
+  };
+
+  const weekDates = getWeekDates();
+  const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+  const onRefresh = React.useCallback(() => {
+    refreshDashboard();
+  }, [refreshDashboard]);
+
+  const calorieProgress =
+    dailyNutrition.targetCalories > 0
+      ? (dailyNutrition.totalCalories / dailyNutrition.targetCalories) * 100
+      : 0;
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <ScrollView
+        style={styles.scrollView}
+        refreshControl={
+          <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
+        }
+      >
+        {/* Header */}
+        <View style={styles.header}>
+          <View style={styles.headerLeft}>
+            <Text style={styles.appIcon}>🍎</Text>
+            <Text style={styles.appName}>Cal AI</Text>
+          </View>
+          <View style={styles.streakBadge}>
+            <Text style={styles.streakIcon}>🔥</Text>
+            <Text style={styles.streakNumber}>
+              {dashboardData?.streakCount || 1}
+            </Text>
+          </View>
+        </View>
+
+        {/* Weekly Calendar */}
+        <View style={styles.calendar}>
+          {weekDates.map((date, index) => {
+            const isSelected =
+              date.toDateString() === selectedDate.toDateString();
+            const isToday = date.toDateString() === new Date().toDateString();
+            return (
+              <TouchableOpacity
+                key={index}
+                style={[
+                  styles.calendarDay,
+                  isSelected && styles.selectedDay,
+                  isToday && styles.todayDay,
+                ]}
+                onPress={() => setSelectedDate(date)}
+              >
+                <Text
+                  style={[styles.dayName, isSelected && styles.selectedDayText]}
+                >
+                  {dayNames[index]}
+                </Text>
+                <Text
+                  style={[
+                    styles.dayNumber,
+                    isSelected && styles.selectedDayText,
+                  ]}
+                >
+                  {date.getDate()}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+
+        {/* Main Calorie Card */}
+        <View style={styles.mainCard}>
+          <View style={styles.calorieSection}>
+            <Text style={styles.calorieNumber}>
+              {dailyNutrition.totalCalories}
+            </Text>
+            <Text style={styles.calorieTarget}>
+              /{dailyNutrition.targetCalories}
+            </Text>
+            <Text style={styles.calorieLabel}>Calories eaten</Text>
+            <Text style={styles.calorieRemaining}>
+              🔥 +{Math.max(0, dailyNutrition.remainingCalories)}
+            </Text>
+          </View>
+          <View style={styles.circularProgress}>
+            <View style={styles.progressCircle}>
+              <Text style={styles.progressText}>🔥</Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Macros Carousel */}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.macrosCarousel}
+          style={styles.macrosScrollView}
+        >
+          <View style={styles.macroItem}>
+            <View style={[styles.macroCircle, styles.proteinCircle]}>
+              <Text style={styles.macroIcon}>🥩</Text>
+            </View>
+            <Text style={styles.macroValue}>
+              {dailyNutrition.totalProtein}/0g
+            </Text>
+            <Text style={styles.macroLabel}>Protein eaten</Text>
+          </View>
+          <View style={styles.macroItem}>
+            <View style={[styles.macroCircle, styles.carbsCircle]}>
+              <Text style={styles.macroIcon}>🌾</Text>
+            </View>
+            <Text style={styles.macroValue}>
+              {dailyNutrition.totalCarbs}/0g
+            </Text>
+            <Text style={styles.macroLabel}>Carbs eaten</Text>
+          </View>
+          <View style={styles.macroItem}>
+            <View style={[styles.macroCircle, styles.fatCircle]}>
+              <Text style={styles.macroIcon}>🧈</Text>
+            </View>
+            <Text style={styles.macroValue}>{dailyNutrition.totalFat}/0g</Text>
+            <Text style={styles.macroLabel}>Fat eaten</Text>
+          </View>
+        </ScrollView>
+
+        {/* Recently uploaded */}
+        <View style={styles.recentMeals}>
+          <Text style={styles.cardTitle}>Recently uploaded</Text>
+
+          {/* Whole Pomegranate */}
+          <View style={styles.mealCard}>
+            <Image
+              source={{
+                uri: 'https://images.unsplash.com/photo-1570197788417-0e82375c9371?w=120&h=120&fit=crop',
+              }}
+              style={styles.mealCardImage}
+            />
+            <View style={styles.mealCardContent}>
+              <View style={styles.mealCardHeader}>
+                <Text style={styles.mealCardName}>Whole Pomegra...</Text>
+                <Text style={styles.mealCardTime}>3:31 PM</Text>
+              </View>
+              <View style={styles.mealCardCalories}>
+                <Text style={styles.calorieIcon}>🔥</Text>
+                <Text style={styles.mealCardCalorieText}>105 calories</Text>
+              </View>
+              <View style={styles.mealCardMacros}>
+                <View style={styles.macroItem}>
+                  <Text style={styles.macroIcon}>🥩</Text>
+                  <Text style={styles.macroAmount}>1g</Text>
+                </View>
+                <View style={styles.macroItem}>
+                  <Text style={styles.macroIcon}>🌾</Text>
+                  <Text style={styles.macroAmount}>26g</Text>
+                </View>
+                <View style={styles.macroItem}>
+                  <Text style={styles.macroIcon}>💧</Text>
+                  <Text style={styles.macroAmount}>0g</Text>
+                </View>
+              </View>
+            </View>
+          </View>
+
+          {/* Half Banana */}
+          <View style={styles.mealCard}>
+            <Image
+              source={{
+                uri: 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=120&h=120&fit=crop',
+              }}
+              style={styles.mealCardImage}
+            />
+            <View style={styles.mealCardContent}>
+              <View style={styles.mealCardHeader}>
+                <Text style={styles.mealCardName}>Half Banana</Text>
+                <Text style={styles.mealCardTime}>12:46 PM</Text>
+              </View>
+              <View style={styles.mealCardCalories}>
+                <Text style={styles.calorieIcon}>🔥</Text>
+                <Text style={styles.mealCardCalorieText}>51 calories</Text>
+              </View>
+              <View style={styles.mealCardMacros}>
+                <View style={styles.macroItem}>
+                  <Text style={styles.macroIcon}>🥩</Text>
+                  <Text style={styles.macroAmount}>1g</Text>
+                </View>
+                <View style={styles.macroItem}>
+                  <Text style={styles.macroIcon}>🌾</Text>
+                  <Text style={styles.macroAmount}>13g</Text>
+                </View>
+                <View style={styles.macroItem}>
+                  <Text style={styles.macroIcon}>💧</Text>
+                  <Text style={styles.macroAmount}>0g</Text>
+                </View>
+              </View>
+            </View>
+          </View>
+
+          {/* Tea */}
+          <View style={styles.mealCard}>
+            <View style={styles.mealCardImagePlaceholder}>
+              <Text style={styles.mealCardImageText}>Tea</Text>
+            </View>
+            <View style={styles.mealCardContent}>
+              <View style={styles.mealCardHeader}>
+                <Text style={styles.mealCardName}>Tea</Text>
+                <Text style={styles.mealCardTime}>12:13 PM</Text>
+              </View>
+              <View style={styles.mealCardCalories}>
+                <Text style={styles.calorieIcon}>🔥</Text>
+                <Text style={styles.mealCardCalorieText}>50 calories</Text>
+              </View>
+              <View style={styles.mealCardMacros}>
+                <View style={styles.macroItem}>
+                  <Text style={styles.macroIcon}>🥩</Text>
+                  <Text style={styles.macroAmount}>1g</Text>
+                </View>
+                <View style={styles.macroItem}>
+                  <Text style={styles.macroIcon}>🌾</Text>
+                  <Text style={styles.macroAmount}>0g</Text>
+                </View>
+                <View style={styles.macroItem}>
+                  <Text style={styles.macroIcon}>💧</Text>
+                  <Text style={styles.macroAmount}>1g</Text>
+                </View>
+              </View>
+            </View>
+          </View>
+
+          {/* Frothed Milk */}
+          <View style={styles.mealCard}>
+            <Image
+              source={{
+                uri: 'https://images.unsplash.com/photo-1563636619-e9143da7973b?w=120&h=120&fit=crop',
+              }}
+              style={styles.mealCardImage}
+            />
+            <View style={styles.mealCardContent}>
+              <View style={styles.mealCardHeader}>
+                <Text style={styles.mealCardName}>Frothed Milk</Text>
+                <Text style={styles.mealCardTime}>10:36 AM</Text>
+              </View>
+              <View style={styles.mealCardCalories}>
+                <Text style={styles.calorieIcon}>🔥</Text>
+                <Text style={styles.mealCardCalorieText}>220 calories</Text>
+              </View>
+              <View style={styles.mealCardMacros}>
+                <View style={styles.macroItem}>
+                  <Text style={styles.macroIcon}>🥩</Text>
+                  <Text style={styles.macroAmount}>11g</Text>
+                </View>
+                <View style={styles.macroItem}>
+                  <Text style={styles.macroIcon}>🌾</Text>
+                  <Text style={styles.macroAmount}>16g</Text>
+                </View>
+                <View style={styles.macroItem}>
+                  <Text style={styles.macroIcon}>💧</Text>
+                  <Text style={styles.macroAmount}>12g</Text>
+                </View>
+              </View>
+            </View>
+          </View>
+        </View>
+
+        {/* Quick Stats */}
+        <View style={styles.statsCard}>
+          <Text style={styles.cardTitle}>Quick Stats</Text>
+          <View style={styles.statsContainer}>
+            <View style={styles.statItem}>
+              <Text style={styles.statValue}>
+                {dashboardData?.currentWeight || user?.weight || 0} kg
+              </Text>
+              <Text style={styles.statLabel}>Current Weight</Text>
+            </View>
+            <View style={styles.statItem}>
+              <Text style={styles.statValue}>
+                {dailyNutrition.targetCalories || 0}
+              </Text>
+              <Text style={styles.statLabel}>Daily Goal</Text>
+            </View>
+          </View>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#F8F9FA',
+  },
+  scrollView: {
+    flex: 1,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 16,
+  },
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  appIcon: {
+    fontSize: 24,
+    marginRight: 8,
+  },
+  appName: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#1A1A1A',
+  },
+  streakBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFF',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  streakIcon: {
+    fontSize: 16,
+    marginRight: 4,
+  },
+  streakNumber: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#1A1A1A',
+  },
+  calendar: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    marginBottom: 24,
+  },
+  calendarDay: {
+    alignItems: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+    minWidth: 40,
+  },
+  selectedDay: {
+    backgroundColor: '#1A1A1A',
+  },
+  todayDay: {
+    backgroundColor: '#E3F2FD',
+  },
+  dayName: {
+    fontSize: 12,
+    color: '#666',
+    marginBottom: 4,
+  },
+  dayNumber: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1A1A1A',
+  },
+  selectedDayText: {
+    color: '#FFF',
+  },
+  mainCard: {
+    backgroundColor: '#FFF',
+    marginHorizontal: 20,
+    marginBottom: 24,
+    padding: 24,
+    borderRadius: 16,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  calorieSection: {
+    flex: 1,
+  },
+  calorieNumber: {
+    fontSize: 48,
+    fontWeight: 'bold',
+    color: '#1A1A1A',
+    lineHeight: 56,
+  },
+  calorieTarget: {
+    fontSize: 18,
+    color: '#999',
+    marginTop: -8,
+  },
+  calorieLabel: {
+    fontSize: 14,
+    color: '#666',
+    marginTop: 4,
+  },
+  calorieRemaining: {
+    fontSize: 14,
+    color: '#FF6B35',
+    fontWeight: '600',
+    marginTop: 8,
+  },
+  circularProgress: {
+    width: 80,
+    height: 80,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  progressCircle: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    borderWidth: 6,
+    borderColor: '#1A1A1A',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#FFF',
+  },
+  progressText: {
+    fontSize: 24,
+  },
+  macrosScrollView: {
+    marginBottom: 24,
+  },
+  macrosCarousel: {
+    paddingHorizontal: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexGrow: 1,
+  },
+  macrosContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 16,
+  },
+  macroItem: {
+    alignItems: 'center',
+    marginRight: 24,
+    minWidth: 80,
+  },
+  macroCircle: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    borderWidth: 4,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  proteinCircle: {
+    borderColor: '#FF6B6B',
+  },
+  carbsCircle: {
+    borderColor: '#FFB347',
+  },
+  fatCircle: {
+    borderColor: '#4DABF7',
+  },
+  macroIcon: {
+    fontSize: 20,
+  },
+  macroValue: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#1A1A1A',
+    marginTop: 8,
+  },
+  macroLabel: {
+    fontSize: 12,
+    color: '#666',
+    marginTop: 2,
+  },
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#1A1A1A',
+    marginBottom: 8,
+  },
+  recentMeals: {
+    paddingHorizontal: 20,
+  },
+  mealItem: {
+    flexDirection: 'row',
+    backgroundColor: '#FFF',
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  mealImage: {
+    width: 60,
+    height: 60,
+    borderRadius: 8,
+    marginRight: 16,
+  },
+  mealInfo: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  mealName: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1A1A1A',
+    marginBottom: 4,
+  },
+  mealTime: {
+    fontSize: 12,
+    color: '#999',
+    marginBottom: 4,
+  },
+  mealCalories: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  calorieIcon: {
+    fontSize: 12,
+    marginRight: 4,
+  },
+  mealCalorieText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#1A1A1A',
+  },
+  mealMacros: {
+    flexDirection: 'row',
+    marginTop: 4,
+  },
+  macroText: {
+    fontSize: 11,
+    color: '#666',
+    marginRight: 12,
+  },
+  progressBarContainer: {
+    height: 8,
+    backgroundColor: '#E5E5E5',
+    borderRadius: 4,
+    overflow: 'hidden',
+  },
+  progressBar: {
+    height: '100%',
+    backgroundColor: '#1A1A1A',
+    borderRadius: 4,
+  },
+  macrosCard: {
+    backgroundColor: '#FFF',
+    marginHorizontal: 20,
+    marginBottom: 24,
+    padding: 24,
+    borderRadius: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  noMealsText: {
+    fontSize: 14,
+    color: '#999',
+    textAlign: 'center',
+    fontStyle: 'italic',
+    paddingVertical: 24,
+  },
+  statsCard: {
+    backgroundColor: '#FFF',
+    marginHorizontal: 20,
+    marginBottom: 24,
+    padding: 24,
+    borderRadius: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  statsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
+  statItem: {
+    alignItems: 'center',
+  },
+  statValue: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#1A1A1A',
+    marginBottom: 8,
+  },
+  statLabel: {
+    fontSize: 12,
+    color: '#666',
+    marginTop: 2,
+  },
+  mealCard: {
+    flexDirection: 'row',
+    backgroundColor: '#FFF',
+    padding: 16,
+    borderRadius: 16,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  mealCardImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 12,
+    marginRight: 16,
+  },
+  mealCardImagePlaceholder: {
+    width: 80,
+    height: 80,
+    borderRadius: 12,
+    marginRight: 16,
+    backgroundColor: '#F0F0F0',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  mealCardImageText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#666',
+  },
+  mealCardContent: {
+    flex: 1,
+    justifyContent: 'space-between',
+  },
+  mealCardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 8,
+  },
+  mealCardName: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#1A1A1A',
+    flex: 1,
+  },
+  mealCardTime: {
+    fontSize: 14,
+    color: '#999',
+    marginLeft: 8,
+  },
+  mealCardCalories: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  mealCardCalorieText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1A1A1A',
+    marginLeft: 4,
+  },
+  mealCardMacros: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+  },
+  macroAmount: {
+    fontSize: 14,
+    color: '#666',
+    marginLeft: 4,
+  },
+});
+
+export default DashboardScreen;
