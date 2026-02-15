@@ -3,7 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { MainTabParamList } from '../types';
 import DashboardScreen from '../features/dashboard/screens/DashboardScreen';
-import AddMealScreen from '../screens/food/AddMealScreen';
+import AddMealScreen from '../features/meal/screens/AddMealScreen';
 import WaterScreen from '../screens/water/WaterScreen';
 import ProfileScreen from '../screens/profile/ProfileScreen';
 

@@ -1,21 +1,10 @@
 import { create } from 'zustand';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { storage } from '../../../utils/storage';
 import { MealState, MealEntry, DailyNutrition } from '../types';
-import { calculateFoodNutrition, calculateMacroTargets } from '../utils/calculateCalories';
-import { useAuthStore } from '../features/auth/stores/authStore';
+import { mealService, isApiError, getErrorMessage } from '../services/meal-service';
+import { useAuthStore } from '../../auth/stores/authStore';
 
-// Using AsyncStorage temporarily - will switch to MMKV after native setup
-const storage = {
-    setItem: async (key: string, value: string): Promise<void> => {
-        await AsyncStorage.setItem(key, value);
-    },
-    getItem: async (key: string): Promise<string | null> => {
-        return await AsyncStorage.getItem(key);
-    },
-    removeItem: async (key: string): Promise<void> => {
-        await AsyncStorage.removeItem(key);
-    },
-};
+// Using safe storage wrapper that handles AsyncStorage errors
 
 export const useMealStore = create<MealState>((set, get) => ({
     meals: [],
@@ -23,58 +12,78 @@ export const useMealStore = create<MealState>((set, get) => ({
     isLoading: false,
 
     addMeal: async (meal: Omit<MealEntry, 'id' | 'createdAt'>) => {
-        const newMeal: MealEntry = {
-            ...meal,
-            id: `meal_${Date.now()}`,
-            createdAt: new Date().toISOString(),
-        };
+        set({ isLoading: true });
+        try {
+            const response = await mealService.addMeal(meal);
+            const newMeal = response.data;
 
-        const currentMeals = get().meals;
-        const updatedMeals = [...currentMeals, newMeal];
+            const currentMeals = get().meals;
+            const updatedMeals = [...currentMeals, newMeal];
 
-        // Update state
-        set({ meals: updatedMeals });
+            // Update state
+            set({ meals: updatedMeals, isLoading: false });
 
-        // Persist to storage
-        await storage.setItem('meals', JSON.stringify(updatedMeals));
+            // Persist to storage
+            await storage.setItem('meals', JSON.stringify(updatedMeals));
 
-        // Recalculate daily nutrition
-        get().getDailyNutrition(meal.date);
+            // Update daily nutrition cache
+            get().updateDailyNutritionCache(meal.date);
+        } catch (error) {
+            console.error('Failed to add meal:', error);
+            set({ isLoading: false });
+            throw new Error(getErrorMessage(error));
+        }
     },
 
     removeMeal: async (mealId: string) => {
-        const currentMeals = get().meals;
-        const updatedMeals = currentMeals.filter(meal => meal.id !== mealId);
+        set({ isLoading: true });
+        try {
+            await mealService.deleteMeal(mealId);
 
-        // Update state
-        set({ meals: updatedMeals });
+            const currentMeals = get().meals;
+            const removedMeal = currentMeals.find(meal => meal.id === mealId);
+            const updatedMeals = currentMeals.filter(meal => meal.id !== mealId);
 
-        // Persist to storage
-        await storage.setItem('meals', JSON.stringify(updatedMeals));
+            // Update state
+            set({ meals: updatedMeals, isLoading: false });
 
-        // Recalculate daily nutrition for affected date
-        const removedMeal = currentMeals.find(meal => meal.id === mealId);
-        if (removedMeal) {
-            get().getDailyNutrition(removedMeal.date);
+            // Persist to storage
+            await storage.setItem('meals', JSON.stringify(updatedMeals));
+
+            // Update daily nutrition cache for affected date
+            if (removedMeal) {
+                get().updateDailyNutritionCache(removedMeal.date);
+            }
+        } catch (error) {
+            console.error('Failed to remove meal:', error);
+            set({ isLoading: false });
+            throw new Error(getErrorMessage(error));
         }
     },
 
     updateMeal: async (mealId: string, updates: Partial<MealEntry>) => {
-        const currentMeals = get().meals;
-        const updatedMeals = currentMeals.map(meal =>
-            meal.id === mealId ? { ...meal, ...updates } : meal
-        );
+        set({ isLoading: true });
+        try {
+            const response = await mealService.updateMeal(mealId, updates);
+            const updatedMeal = response.data;
 
-        // Update state
-        set({ meals: updatedMeals });
+            const currentMeals = get().meals;
+            const updatedMeals = currentMeals.map(meal =>
+                meal.id === mealId ? updatedMeal : meal
+            );
 
-        // Persist to storage
-        await storage.setItem('meals', JSON.stringify(updatedMeals));
+            // Update state
+            set({ meals: updatedMeals, isLoading: false });
 
-        // Recalculate daily nutrition cache
-        const updatedMeal = updatedMeals.find(meal => meal.id === mealId);
-        if (updatedMeal) {
+            // Persist to storage
+            await storage.setItem('meals', JSON.stringify(updatedMeals));
+
+            // Update daily nutrition cache
             get().updateDailyNutritionCache(updatedMeal.date);
+        } catch (error) {
+            console.error('Failed to update meal:', error);
+            set({ isLoading: false });
+            throw new Error(getErrorMessage(error));
         }
     },
 
@@ -97,11 +106,12 @@ export const useMealStore = create<MealState>((set, get) => ({
         let totalFat = 0;
 
         dayMeals.forEach(meal => {
-            const nutrition = calculateFoodNutrition(meal.food, meal.quantity);
-            totalCalories += nutrition.calories;
-            totalProtein += nutrition.protein;
-            totalCarbs += nutrition.carbs;
-            totalFat += nutrition.fat;
+            // Calculate nutrition based on quantity (meal.quantity is in grams, food nutrition is per 100g)
+            const multiplier = meal.quantity / 100;
+            totalCalories += meal.food.calories * multiplier;
+            totalProtein += meal.food.protein * multiplier;
+            totalCarbs += meal.food.carbs * multiplier;
+            totalFat += meal.food.fat * multiplier;
         });
 
         // Get target calories from user

@@ -11,6 +11,8 @@ import {
   Platform,
 } from 'react-native';
 import { launchImageLibrary } from 'react-native-image-picker';
+import { useMealStore } from '../stores/mealStore';
+import { mealService } from '../services/meal-service';
 
 import {
   Camera,
@@ -28,10 +30,12 @@ const AddMealScreen: React.FC = () => {
   const [cameraPermission, setCameraPermission] =
     useState<CameraPermissionStatus>('not-determined');
   const [isCameraActive, setIsCameraActive] = useState(true);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const devices = useCameraDevices();
   const device = devices.find(d => d.position === 'back');
   const camera = useRef<Camera>(null);
+  const { addMeal, isLoading } = useMealStore();
 
   useEffect(() => {
     checkCameraPermission();
@@ -72,22 +76,156 @@ const AddMealScreen: React.FC = () => {
   };
 
   const takePicture = async () => {
+    if (isProcessing) return;
+
     try {
+      setIsProcessing(true);
+
       if (camera.current) {
         const photo = await camera.current.takePhoto({
           flash: 'auto',
         });
 
-        // Handle the captured photo
         console.log('Photo captured:', photo.path);
-        Alert.alert(
-          'Photo Captured',
-          `Scan mode: ${selectedMode}\nPhoto saved to: ${photo.path}`,
-        );
+
+        // Process the photo based on scan mode
+        await processPhoto(photo.path, selectedMode);
       }
     } catch (error) {
       console.error('Error taking picture:', error);
       Alert.alert('Error', 'Failed to capture photo');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const processPhoto = async (photoPath: string, mode: ScanMode) => {
+    try {
+      switch (mode) {
+        case 'barcode':
+          // In a real app, this would use ML Kit or similar to scan barcode
+          await handleBarcodeScanning(photoPath);
+          break;
+        case 'food':
+          // In a real app, this would use food recognition AI
+          await handleFoodScanning(photoPath);
+          break;
+        case 'label':
+          // In a real app, this would use OCR to read nutrition labels
+          await handleLabelScanning(photoPath);
+          break;
+      }
+    } catch (error) {
+      console.error('Error processing photo:', error);
+      Alert.alert('Processing Error', 'Failed to process the photo');
+    }
+  };
+
+  const handleBarcodeScanning = async (photoPath: string) => {
+    // Mock barcode scanning - in production, use ML Kit
+    const mockBarcode = '123456789012';
+
+    try {
+      const response = await mealService.getFoodByBarcode(mockBarcode);
+      const food = response.data;
+
+      Alert.alert(
+        'Food Found!',
+        `Found: ${food.name}\nCalories: ${food.calories} per 100g`,
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Add to Meal', onPress: () => showAddMealDialog(food) },
+        ],
+      );
+    } catch (error) {
+      Alert.alert('Not Found', 'No food found for this barcode');
+    }
+  };
+
+  const handleFoodScanning = async (photoPath: string) => {
+    // Mock food recognition - in production, use food recognition AI
+    const mockFoodResults = ['apple', 'banana', 'orange'];
+    const randomFood =
+      mockFoodResults[Math.floor(Math.random() * mockFoodResults.length)];
+
+    if (!randomFood) return;
+
+    try {
+      const response = await mealService.searchFoods(randomFood);
+      const foods = response.data;
+
+      if (foods.length > 0) {
+        const food = foods[0];
+        if (food) {
+          Alert.alert(
+            'Food Recognized!',
+            `Detected: ${food.name}\nCalories: ${food.calories} per 100g`,
+            [
+              { text: 'Cancel', style: 'cancel' },
+              { text: 'Add to Meal', onPress: () => showAddMealDialog(food) },
+            ],
+          );
+        }
+      } else {
+        Alert.alert(
+          'Not Recognized',
+          'Could not identify the food in the image',
+        );
+      }
+    } catch (error) {
+      Alert.alert('Recognition Error', 'Failed to recognize food in image');
+    }
+  };
+
+  const handleLabelScanning = async (photoPath: string) => {
+    // Mock nutrition label scanning - in production, use OCR
+    Alert.alert(
+      'Label Scanning',
+      'Nutrition label scanning is not yet implemented. This would use OCR to read nutrition facts.',
+      [{ text: 'OK' }],
+    );
+  };
+
+  const showAddMealDialog = (food: any) => {
+    Alert.prompt(
+      'Add to Meal',
+      `How many grams of ${food.name}?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Add',
+          onPress: (quantity?: string) => {
+            if (quantity && !isNaN(Number(quantity))) {
+              addFoodToMeal(food, Number(quantity));
+            } else {
+              Alert.alert('Invalid Quantity', 'Please enter a valid number');
+            }
+          },
+        },
+      ],
+      'plain-text',
+      '100',
+    );
+  };
+
+  const addFoodToMeal = async (food: any, quantity: number) => {
+    try {
+      const today = new Date().toISOString().split('T')[0] || '';
+      const mealEntry = {
+        foodId: food.id,
+        food: food,
+        quantity: quantity,
+        mealType: 'snack' as const,
+        date: today,
+      };
+
+      await addMeal(mealEntry);
+      Alert.alert(
+        'Success',
+        `Added ${quantity}g of ${food.name} to your meals!`,
+      );
+    } catch (error) {
+      Alert.alert('Error', 'Failed to add meal');
     }
   };
 
@@ -295,8 +433,23 @@ const AddMealScreen: React.FC = () => {
           <Text style={styles.bottomButtonIcon}>✨</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.captureButton} onPress={takePicture}>
-          <View style={styles.captureButtonInner} />
+        <TouchableOpacity
+          style={[
+            styles.captureButton,
+            isProcessing && styles.captureButtonProcessing,
+          ]}
+          onPress={takePicture}
+          disabled={isProcessing}
+        >
+          <View
+            style={[
+              styles.captureButtonInner,
+              isProcessing && styles.captureButtonInnerProcessing,
+            ]}
+          />
+          {isProcessing && (
+            <Text style={styles.processingText}>Processing...</Text>
+          )}
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -511,6 +664,19 @@ const styles = StyleSheet.create({
     height: 60,
     borderRadius: 30,
     backgroundColor: '#FFFFFF',
+  },
+  captureButtonProcessing: {
+    opacity: 0.7,
+  },
+  captureButtonInnerProcessing: {
+    backgroundColor: '#CCCCCC',
+  },
+  processingText: {
+    position: 'absolute',
+    bottom: -25,
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '600',
   },
   bottomIndicator: {
     position: 'absolute',
