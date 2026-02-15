@@ -3,49 +3,6 @@ import { ApiResponse } from '../../../types';
 import { mockMeals } from '../../../mock/meals';
 import { useAuthStore } from '../../auth/stores/authStore';
 
-// Mock recent meals data
-const mockRecentMeals: RecentMeal[] = [
-    {
-        id: '1',
-        name: 'Whole Pomegra...',
-        time: '3:31 PM',
-        calories: 105,
-        protein: 1,
-        carbs: 26,
-        fat: 0,
-        imageUrl: 'https://images.unsplash.com/photo-1570197788417-0e82375c9371?w=120&h=120&fit=crop',
-    },
-    {
-        id: '2',
-        name: 'Half Banana',
-        time: '12:46 PM',
-        calories: 51,
-        protein: 1,
-        carbs: 13,
-        fat: 0,
-        imageUrl: 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=120&h=120&fit=crop',
-    },
-    {
-        id: '3',
-        name: 'Tea',
-        time: '12:13 PM',
-        calories: 50,
-        protein: 1,
-        carbs: 0,
-        fat: 1,
-    },
-    {
-        id: '4',
-        name: 'Frothed Milk',
-        time: '10:36 AM',
-        calories: 220,
-        protein: 11,
-        carbs: 16,
-        fat: 12,
-        imageUrl: 'https://images.unsplash.com/photo-1563636619-e9143da7973b?w=120&h=120&fit=crop',
-    },
-];
-
 // Simulate network delay
 const simulateNetworkDelay = (ms: number = 800): Promise<void> => {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -84,10 +41,10 @@ class MockDashboardService implements DashboardService {
             const targetCalories = user?.targetCalories || 2712;
 
             // Calculate stats from recent meals
-            const totalCalories = mockRecentMeals.reduce((sum, meal) => sum + meal.calories, 0);
-            const totalProtein = mockRecentMeals.reduce((sum, meal) => sum + meal.protein, 0);
-            const totalCarbs = mockRecentMeals.reduce((sum, meal) => sum + meal.carbs, 0);
-            const totalFat = mockRecentMeals.reduce((sum, meal) => sum + meal.fat, 0);
+            const totalCalories = mockMeals.reduce((sum, meal) => sum + meal.calories, 0);
+            const totalProtein = mockMeals.reduce((sum, meal) => sum + meal.protein, 0);
+            const totalCarbs = mockMeals.reduce((sum, meal) => sum + meal.carbs, 0);
+            const totalFat = mockMeals.reduce((sum, meal) => sum + meal.fat, 0);
 
             // Calculate macro targets (example ratios)
             const targetProtein = Math.round((targetCalories * 0.25) / 4); // 25% protein
@@ -112,7 +69,7 @@ class MockDashboardService implements DashboardService {
 
             const dashboardData: DashboardData = {
                 stats,
-                recentMeals: mockRecentMeals,
+                recentMeals: mockMeals,
                 streakCount: 1,
                 currentWeight: user?.weight || 70,
                 lastUpdated: new Date().toISOString(),
@@ -137,7 +94,7 @@ class MockDashboardService implements DashboardService {
         await simulateNetworkDelay(400);
 
         try {
-            let filteredMeals = [...mockRecentMeals];
+            let filteredMeals = [...mockMeals];
 
             // Apply filters if provided
             if (filters?.mealType) {
@@ -170,10 +127,10 @@ class MockDashboardService implements DashboardService {
             const user = useAuthStore.getState().user;
             const targetCalories = user?.targetCalories || 2712;
 
-            const totalCalories = mockRecentMeals.reduce((sum, meal) => sum + meal.calories, 0);
-            const totalProtein = mockRecentMeals.reduce((sum, meal) => sum + meal.protein, 0);
-            const totalCarbs = mockRecentMeals.reduce((sum, meal) => sum + meal.carbs, 0);
-            const totalFat = mockRecentMeals.reduce((sum, meal) => sum + meal.fat, 0);
+            const totalCalories = mockMeals.reduce((sum, meal) => sum + meal.calories, 0);
+            const totalProtein = mockMeals.reduce((sum, meal) => sum + meal.protein, 0);
+            const totalCarbs = mockMeals.reduce((sum, meal) => sum + meal.carbs, 0);
+            const totalFat = mockMeals.reduce((sum, meal) => sum + meal.fat, 0);
 
             const targetProtein = Math.round((targetCalories * 0.25) / 4);
             const targetCarbs = Math.round((targetCalories * 0.45) / 4);

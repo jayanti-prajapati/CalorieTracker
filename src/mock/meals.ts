@@ -1,44 +1,66 @@
-import { MealEntry } from '../types';
-import { mockFoods } from './foods';
+import { MealEntry } from './../features/meal/types';
 
+
+// Mock recent meals data
 export const mockMeals: MealEntry[] = [
     {
         id: '1',
-        foodId: '1',
-        food: mockFoods[0], // Chicken Breast
-        quantity: 150,
+        name: 'Whole Pomegranate',
+        time: '3:31 PM',
+        calories: 105,
+        protein: 1,
+        carbs: 26,
+        fat: 0,
+        quantity: 100,
         mealType: 'lunch',
-        date: new Date().toISOString().split('T')[0],
+        date: new Date().toISOString().split('T')[0] ?? '',
         createdAt: new Date().toISOString(),
+        imageUrl: 'https://images.unsplash.com/photo-1570197788417-0e82375c9371?w=120&h=120&fit=crop',
     },
     {
         id: '2',
-        foodId: '2',
-        food: mockFoods[1], // Brown Rice
+        name: 'Half Banana',
+        time: '12:46 PM',
+        calories: 51,
+        protein: 1,
+        carbs: 13,
+        fat: 0,
         quantity: 100,
         mealType: 'lunch',
-        date: new Date().toISOString().split('T')[0],
+        date: new Date().toISOString().split('T')[0] ?? '',
         createdAt: new Date().toISOString(),
+        imageUrl: 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=120&h=120&fit=crop',
     },
     {
         id: '3',
-        foodId: '9',
-        food: mockFoods[8], // Oatmeal
-        quantity: 80,
-        mealType: 'breakfast',
-        date: new Date().toISOString().split('T')[0],
+        name: 'Tea',
+        time: '12:13 PM',
+        calories: 50,
+        protein: 1,
+        carbs: 0,
+        fat: 1,
+        quantity: 100,
+        mealType: 'lunch',
+        date: new Date().toISOString().split('T')[0] ?? '',
         createdAt: new Date().toISOString(),
+        imageUrl: 'https://images.unsplash.com/photo-1563636619-e9143da7973b?w=120&h=120&fit=crop',
     },
     {
         id: '4',
-        foodId: '3',
-        food: mockFoods[2], // Banana
-        quantity: 120,
-        mealType: 'breakfast',
-        date: new Date().toISOString().split('T')[0],
+        name: 'Frothed Milk',
+        time: '10:36 AM',
+        calories: 220,
+        protein: 11,
+        carbs: 16,
+        fat: 12,
         createdAt: new Date().toISOString(),
+        quantity: 100,
+        mealType: 'lunch',
+        date: new Date().toISOString().split('T')[0] ?? '',
+        imageUrl: 'https://images.unsplash.com/photo-1563636619-e9143da7973b?w=120&h=120&fit=crop',
     },
 ];
+
 
 export const getMealsForDate = async (date: string): Promise<MealEntry[]> => {
     return new Promise((resolve) => {

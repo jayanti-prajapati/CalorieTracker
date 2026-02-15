@@ -1,6 +1,5 @@
-import { Food, MealEntry, DailyNutrition } from '../types';
+import { MealEntry, DailyNutrition } from '../types';
 import { ApiResponse } from '../../../types';
-import { mockFoods } from '../../../mock/foods';
 import { mockMeals } from '../../../mock/meals';
 import { calculateFoodNutrition } from '../../../utils/calculateCalories';
 import { useAuthStore } from '../../auth/stores/authStore';
@@ -12,9 +11,9 @@ const simulateNetworkDelay = (ms: number = 600): Promise<void> => {
 
 // Meal Service Interface
 export interface MealService {
-    searchFoods(query: string): Promise<ApiResponse<Food[]>>;
-    getFoodById(foodId: string): Promise<ApiResponse<Food>>;
-    getFoodByBarcode(barcode: string): Promise<ApiResponse<Food>>;
+    searchFoods(query: string): Promise<ApiResponse<MealEntry[]>>;
+    getFoodById(foodId: string): Promise<ApiResponse<MealEntry>>;
+    getFoodByBarcode(barcode: string): Promise<ApiResponse<MealEntry>>;
     addMeal(meal: Omit<MealEntry, 'id' | 'createdAt'>): Promise<ApiResponse<MealEntry>>;
     updateMeal(mealId: string, updates: Partial<MealEntry>): Promise<ApiResponse<MealEntry>>;
     deleteMeal(mealId: string): Promise<ApiResponse<null>>;
@@ -39,16 +38,16 @@ class ApiError extends Error {
 class MockMealService implements MealService {
     private meals: MealEntry[] = [...mockMeals];
 
-    async searchFoods(query: string): Promise<ApiResponse<Food[]>> {
+    async searchFoods(query: string): Promise<ApiResponse<MealEntry[]>> {
         console.log('🔍 Meal Service: Searching foods', { query });
 
         await simulateNetworkDelay(400);
 
         try {
-            const searchResults = mockFoods.filter(food =>
-                food.name.toLowerCase().includes(query.toLowerCase()) ||
-                food.brand?.toLowerCase().includes(query.toLowerCase()) ||
-                food.category?.toLowerCase().includes(query.toLowerCase())
+            const searchResults = mockMeals.filter(meal =>
+                meal.name.toLowerCase().includes(query.toLowerCase()) ||
+                meal.brand?.toLowerCase().includes(query.toLowerCase()) ||
+                meal.category?.toLowerCase().includes(query.toLowerCase())
             );
 
             // Limit results to 20 for performance
@@ -70,13 +69,13 @@ class MockMealService implements MealService {
         }
     }
 
-    async getFoodById(foodId: string): Promise<ApiResponse<Food>> {
+    async getFoodById(foodId: string): Promise<ApiResponse<MealEntry>> {
         console.log('🍎 Meal Service: Getting food by ID', { foodId });
 
         await simulateNetworkDelay(200);
 
         try {
-            const food = mockFoods.find(f => f.id === foodId);
+            const food = mockMeals.find(f => f.id === foodId);
             if (!food) {
                 throw new ApiError('Food not found', 'FOOD_NOT_FOUND');
             }
@@ -93,13 +92,13 @@ class MockMealService implements MealService {
         }
     }
 
-    async getFoodByBarcode(barcode: string): Promise<ApiResponse<Food>> {
+    async getFoodByBarcode(barcode: string): Promise<ApiResponse<MealEntry>> {
         console.log('📱 Meal Service: Getting food by barcode', { barcode });
 
         await simulateNetworkDelay(800);
 
         try {
-            const food = mockFoods.find(f => f.barcode === barcode);
+            const food = mockMeals.find(f => f.barcode === barcode);
             if (!food) {
                 throw new ApiError('Food not found for barcode', 'BARCODE_NOT_FOUND');
             }
@@ -118,7 +117,7 @@ class MockMealService implements MealService {
 
     async addMeal(meal: Omit<MealEntry, 'id' | 'createdAt'>): Promise<ApiResponse<MealEntry>> {
         console.log('➕ Meal Service: Adding meal', {
-            foodName: meal.food.name,
+            foodName: meal.name,
             quantity: meal.quantity,
             mealType: meal.mealType,
             date: meal.date
@@ -240,7 +239,7 @@ class MockMealService implements MealService {
             let totalFat = 0;
 
             dateMeals.forEach(meal => {
-                const nutrition = calculateFoodNutrition(meal.food, meal.quantity);
+                const nutrition = calculateFoodNutrition(meal, meal.quantity);
                 totalCalories += nutrition.calories;
                 totalProtein += nutrition.protein;
                 totalCarbs += nutrition.carbs;

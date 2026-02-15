@@ -11,8 +11,10 @@ import {
   Platform,
 } from 'react-native';
 import { launchImageLibrary } from 'react-native-image-picker';
+import { useNavigation } from '@react-navigation/native';
 import { useMealStore } from '../stores/mealStore';
 import { mealService } from '../services/meal-service';
+import { MealEntry } from '../types';
 
 // Conditional import with error handling for react-native-vision-camera
 let Camera: any = null;
@@ -51,11 +53,13 @@ const AddMealScreen: React.FC = () => {
     useState<CameraPermissionStatus>('not-determined');
   const [isCameraActive, setIsCameraActive] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [simulationMode, setSimulationMode] = useState(false);
 
   const devices = useCameraDevices();
   const device = devices.find((d: any) => d.position === 'back');
   const camera = useRef<any>(null);
   const { addMeal, isLoading } = useMealStore();
+  const navigation = useNavigation();
 
   useEffect(() => {
     checkCameraPermission();
@@ -63,9 +67,11 @@ const AddMealScreen: React.FC = () => {
 
   const checkCameraPermission = async () => {
     try {
-      // For iOS Simulator or when camera module is not available, grant permission automatically
-      if ((Platform.OS === 'ios' && __DEV__) || !Camera) {
+      // For iOS Simulator or when camera module is not available, enable simulation mode
+      if ((Platform.OS === 'ios' && __DEV__) || !Camera || !device) {
         setCameraPermission('granted');
+        setSimulationMode(true);
+        console.log('🎭 Simulation mode enabled - no camera/device available');
         return;
       }
 
@@ -78,8 +84,10 @@ const AddMealScreen: React.FC = () => {
       }
     } catch (error) {
       console.warn('Camera permission check failed:', error);
-      // For simulator or when camera is not available, still allow access with mock interface
+      // Enable simulation mode when camera is not available
       setCameraPermission('granted');
+      setSimulationMode(true);
+      console.log('🎭 Simulation mode enabled - camera error fallback');
     }
   };
 
@@ -97,7 +105,11 @@ const AddMealScreen: React.FC = () => {
     try {
       setIsProcessing(true);
 
-      if (camera.current) {
+      if (simulationMode) {
+        // Simulate photo capture and processing
+        console.log('🎭 Simulating photo capture for mode:', selectedMode);
+        await simulatePhotoCapture(selectedMode);
+      } else if (camera.current) {
         const photo = await camera.current.takePhoto({
           flash: 'auto',
         });
@@ -113,6 +125,143 @@ const AddMealScreen: React.FC = () => {
     } finally {
       setIsProcessing(false);
     }
+  };
+
+  const simulatePhotoCapture = async (mode: ScanMode) => {
+    // Add realistic delay to simulate processing
+    await new Promise<void>(resolve => setTimeout(resolve, 1500));
+
+    console.log('🎭 Processing simulated photo for mode:', mode);
+
+    // Simulate different scanning results based on mode
+    switch (mode) {
+      case 'barcode':
+        await simulateBarcodeScanning();
+        break;
+      case 'food':
+        await simulateFoodScanning();
+        break;
+      case 'label':
+        await simulateLabelScanning();
+        break;
+    }
+  };
+
+  const simulateBarcodeScanning = async () => {
+    // Simulate barcode scanning with random success/failure
+    const mockBarcodes = ['123456789012', '987654321098', '456789123456'];
+    const randomBarcode =
+      mockBarcodes[Math.floor(Math.random() * mockBarcodes.length)] ||
+      '123456789012';
+
+    try {
+      console.log('🎭 Simulating barcode scan:', randomBarcode);
+      const response = await mealService.getFoodByBarcode(randomBarcode);
+      const food = response.data;
+
+      Alert.alert(
+        '🎭 Simulation: Food Found!',
+        `Scanned Barcode: ${randomBarcode}\nFound: ${food.name}\nCalories: ${food.calories} per 100g`,
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Add to Meal', onPress: () => showAddMealDialog(food) },
+        ],
+      );
+    } catch (error) {
+      Alert.alert(
+        '🎭 Simulation: Not Found',
+        `No food found for barcode: ${randomBarcode}`,
+      );
+    }
+  };
+
+  const simulateFoodScanning = async () => {
+    // Simulate food recognition with realistic results
+    const mockFoodResults = [
+      'apple',
+      'banana',
+      'orange',
+      'chicken breast',
+      'salmon',
+      'broccoli',
+      'rice',
+      'bread',
+      'pasta',
+      'avocado',
+      'tomato',
+      'spinach',
+    ];
+    const randomFood =
+      mockFoodResults[Math.floor(Math.random() * mockFoodResults.length)] ||
+      'apple';
+
+    try {
+      console.log('🎭 Simulating food recognition:', randomFood);
+      const response = await mealService.searchFoods(randomFood);
+      const foods = response.data;
+
+      if (foods.length > 0) {
+        const food = foods[0];
+        if (food) {
+          Alert.alert(
+            '🎭 Simulation: Food Recognized!',
+            `AI Detected: ${food.name}\nCalories: ${food.calories} per 100g\nProtein: ${food.protein}g | Carbs: ${food.carbs}g | Fat: ${food.fat}g`,
+            [
+              { text: 'Wrong Food', style: 'cancel' },
+              { text: 'Add to Meal', onPress: () => showAddMealDialog(food) },
+            ],
+          );
+        }
+      } else {
+        Alert.alert(
+          '🎭 Simulation: Not Recognized',
+          'Could not identify the food in the image. Try a different angle or lighting.',
+        );
+      }
+    } catch (error) {
+      Alert.alert(
+        '🎭 Simulation: Recognition Error',
+        'Failed to process the food image',
+      );
+    }
+  };
+
+  const simulateLabelScanning = async () => {
+    // Simulate nutrition label OCR scanning
+    const mockNutritionLabels = [
+      { name: 'Granola Bar', calories: 150, protein: 3, carbs: 23, fat: 6 },
+      { name: 'Yogurt Cup', calories: 120, protein: 12, carbs: 18, fat: 2 },
+      { name: 'Protein Shake', calories: 160, protein: 25, carbs: 8, fat: 3 },
+      { name: 'Trail Mix', calories: 180, protein: 5, carbs: 16, fat: 12 },
+    ];
+
+    const randomLabel =
+      mockNutritionLabels[
+        Math.floor(Math.random() * mockNutritionLabels.length)
+      ] || mockNutritionLabels[0];
+
+    console.log('🎭 Simulating nutrition label scan:', randomLabel?.name);
+
+    // Create a mock food object from the nutrition label
+    const mockFood = {
+      id: `sim_${Date.now()}`,
+      name: randomLabel?.name,
+      calories: randomLabel?.calories,
+      protein: randomLabel?.protein,
+      carbs: randomLabel?.carbs,
+      fat: randomLabel?.fat,
+      brand: 'Scanned Label',
+      category: 'packaged',
+    };
+
+    Alert.alert(
+      '🎭 Simulation: Label Scanned!',
+      `OCR Detected: ${mockFood.name}\nPer Serving:\nCalories: ${mockFood.calories}\nProtein: ${mockFood.protein}g | Carbs: ${mockFood.carbs}g | Fat: ${mockFood.fat}g`,
+      [
+        { text: 'Scan Again', style: 'cancel' },
+        { text: 'Add to Meal', onPress: () => showAddMealDialog(mockFood) },
+      ],
+    );
   };
 
   const processPhoto = async (photoPath: string, mode: ScanMode) => {
@@ -227,18 +376,39 @@ const AddMealScreen: React.FC = () => {
   const addFoodToMeal = async (food: any, quantity: number) => {
     try {
       const today = new Date().toISOString().split('T')[0] || '';
-      const mealEntry = {
-        foodId: food.id,
-        food: food,
+      const mealEntry: MealEntry = {
         quantity: quantity,
         mealType: 'snack' as const,
         date: today,
+        time: new Date().toISOString(),
+        calories: food.calories,
+        protein: food.protein,
+        carbs: food.carbs,
+        fat: food.fat,
+        brand: food.brand,
+        category: food.category,
+        barcode: food.barcode,
+        imageUrl: food.imageUrl,
+        name: food.name,
+        createdAt: new Date().toISOString(),
+        id: `meal_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       };
 
-      await addMeal(mealEntry);
+      await mealService.addMeal(mealEntry);
+
+      // Show success message and navigate back to dashboard
       Alert.alert(
-        'Success',
+        'Success!',
         `Added ${quantity}g of ${food.name} to your meals!`,
+        [
+          {
+            text: 'OK',
+            onPress: () => {
+              // Navigate back to Dashboard tab
+              navigation.navigate('Dashboard' as never);
+            },
+          },
+        ],
       );
     } catch (error) {
       Alert.alert('Error', 'Failed to add meal');
@@ -282,15 +452,16 @@ const AddMealScreen: React.FC = () => {
     );
   }
 
-  if (!device) {
-    return (
-      <View style={styles.container}>
-        <View style={styles.permissionContainer}>
-          <Text style={styles.permissionText}>No camera device found</Text>
-        </View>
-      </View>
-    );
-  }
+  // Remove the early return for no device - let simulation mode handle it
+  // if (!device) {
+  //   return (
+  //     <View style={styles.container}>
+  //       <View style={styles.permissionContainer}>
+  //         <Text style={styles.permissionText}>No camera device found</Text>
+  //       </View>
+  //     </View>
+  //   );
+  // }
 
   return (
     <View style={styles.container}>
@@ -314,25 +485,41 @@ const AddMealScreen: React.FC = () => {
         <View style={styles.cameraBackground}>
           <View style={styles.simulatorOverlay}>
             <Text style={styles.simulatorText}>
-              {!Camera ? '📷 Camera Module' : '📱 iOS Simulator'}
+              {simulationMode
+                ? '🎭 Simulation Mode'
+                : !Camera
+                ? '📷 Camera Module'
+                : '📱 iOS Simulator'}
             </Text>
             <Text style={styles.simulatorSubtext}>
-              {!Camera
+              {simulationMode
+                ? 'Mock scanning active - tap capture to simulate'
+                : !Camera
                 ? 'Camera module not available'
                 : 'Camera preview not available'}
             </Text>
             <Text style={styles.simulatorSubtext}>
-              {!Camera
+              {simulationMode
+                ? `Current mode: ${selectedMode.toUpperCase()} scanning`
+                : !Camera
                 ? 'Mock scanning interface active'
                 : 'Use a physical device for real camera'}
             </Text>
+            {simulationMode && (
+              <View style={styles.simulationIndicator}>
+                <Text style={styles.simulationBadge}>🎭 SIMULATION</Text>
+              </View>
+            )}
           </View>
         </View>
       )}
 
       {/* Header */}
       <SafeAreaView style={styles.header}>
-        <TouchableOpacity style={styles.closeButton}>
+        <TouchableOpacity
+          style={styles.closeButton}
+          onPress={() => navigation.goBack()}
+        >
           <Text style={styles.closeIcon}>✕</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.helpButton}>
@@ -751,6 +938,20 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'center',
     marginBottom: 4,
+  },
+  simulationIndicator: {
+    marginTop: 20,
+    alignItems: 'center',
+  },
+  simulationBadge: {
+    backgroundColor: 'rgba(255, 193, 7, 0.9)',
+    color: '#000000',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 15,
+    fontSize: 12,
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
 });
 

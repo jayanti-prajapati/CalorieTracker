@@ -108,10 +108,10 @@ export const useMealStore = create<MealState>((set, get) => ({
         dayMeals.forEach(meal => {
             // Calculate nutrition based on quantity (meal.quantity is in grams, food nutrition is per 100g)
             const multiplier = meal.quantity / 100;
-            totalCalories += meal.food.calories * multiplier;
-            totalProtein += meal.food.protein * multiplier;
-            totalCarbs += meal.food.carbs * multiplier;
-            totalFat += meal.food.fat * multiplier;
+            totalCalories += meal.calories * multiplier;
+            totalProtein += meal.protein * multiplier;
+            totalCarbs += meal.carbs * multiplier;
+            totalFat += meal.fat * multiplier;
         });
 
         // Get target calories from user

@@ -1,25 +1,21 @@
 
 
-export interface Food {
-    id: string;
-    name: string;
-    calories: number; // per 100g
-    protein: number; // per 100g
-    carbs: number; // per 100g
-    fat: number; // per 100g
-    barcode?: string;
-    brand?: string;
-    category?: string;
-}
-
 export interface MealEntry {
     id: string;
-    foodId: string;
-    food: Food;
     quantity: number; // in grams
     mealType: 'breakfast' | 'lunch' | 'dinner' | 'snack';
     date: string; // ISO date string
     createdAt: string;
+    name: string;
+    time: string;
+    calories: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+    barcode?: string;
+    brand?: string;
+    category?: string;
+    imageUrl?: string;
 }
 
 export interface WaterEntry {
