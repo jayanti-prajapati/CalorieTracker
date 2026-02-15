@@ -14,11 +14,31 @@ import { launchImageLibrary } from 'react-native-image-picker';
 import { useMealStore } from '../stores/mealStore';
 import { mealService } from '../services/meal-service';
 
-import {
-  Camera,
-  useCameraDevices,
-  CameraPermissionStatus,
-} from 'react-native-vision-camera';
+// Conditional import with error handling for react-native-vision-camera
+let Camera: any = null;
+let useCameraDevices: any = () => [];
+let getCameraPermissionStatus: any = () => Promise.resolve('denied');
+let requestCameraPermission: any = () => Promise.resolve('denied');
+
+type CameraPermissionStatus =
+  | 'granted'
+  | 'denied'
+  | 'not-determined'
+  | 'restricted';
+
+try {
+  const VisionCamera = require('react-native-vision-camera');
+  Camera = VisionCamera.Camera;
+  useCameraDevices = VisionCamera.useCameraDevices;
+  getCameraPermissionStatus =
+    VisionCamera.Camera?.getCameraPermissionStatus ||
+    (() => Promise.resolve('denied'));
+  requestCameraPermission =
+    VisionCamera.Camera?.requestCameraPermission ||
+    (() => Promise.resolve('denied'));
+} catch (error) {
+  console.warn('react-native-vision-camera not available:', error);
+}
 
 const { width, height } = Dimensions.get('window');
 
@@ -33,8 +53,8 @@ const AddMealScreen: React.FC = () => {
   const [isProcessing, setIsProcessing] = useState(false);
 
   const devices = useCameraDevices();
-  const device = devices.find(d => d.position === 'back');
-  const camera = useRef<Camera>(null);
+  const device = devices.find((d: any) => d.position === 'back');
+  const camera = useRef<any>(null);
   const { addMeal, isLoading } = useMealStore();
 
   useEffect(() => {
@@ -43,27 +63,23 @@ const AddMealScreen: React.FC = () => {
 
   const checkCameraPermission = async () => {
     try {
-      // For iOS Simulator, grant permission automatically
-      if (Platform.OS === 'ios' && __DEV__) {
+      // For iOS Simulator or when camera module is not available, grant permission automatically
+      if ((Platform.OS === 'ios' && __DEV__) || !Camera) {
         setCameraPermission('granted');
         return;
       }
 
-      const permission = await Camera.getCameraPermissionStatus();
+      const permission = await getCameraPermissionStatus();
       setCameraPermission(permission);
 
       if (permission === 'not-determined') {
-        const newPermission = await Camera.requestCameraPermission();
+        const newPermission = await requestCameraPermission();
         setCameraPermission(newPermission);
       }
     } catch (error) {
       console.warn('Camera permission check failed:', error);
-      // For simulator, still allow access with mock camera
-      if (Platform.OS === 'ios' && __DEV__) {
-        setCameraPermission('granted');
-      } else {
-        setCameraPermission('denied');
-      }
+      // For simulator or when camera is not available, still allow access with mock interface
+      setCameraPermission('granted');
     }
   };
 
@@ -284,8 +300,8 @@ const AddMealScreen: React.FC = () => {
         translucent
       />
 
-      {/* Camera or Mock for Simulator */}
-      {device ? (
+      {/* Camera or Mock for Simulator/No Camera Module */}
+      {device && Camera ? (
         <Camera
           ref={camera}
           style={StyleSheet.absoluteFill}
@@ -297,12 +313,18 @@ const AddMealScreen: React.FC = () => {
       ) : (
         <View style={styles.cameraBackground}>
           <View style={styles.simulatorOverlay}>
-            <Text style={styles.simulatorText}>📱 iOS Simulator</Text>
-            <Text style={styles.simulatorSubtext}>
-              Camera preview not available
+            <Text style={styles.simulatorText}>
+              {!Camera ? '📷 Camera Module' : '📱 iOS Simulator'}
             </Text>
             <Text style={styles.simulatorSubtext}>
-              Use a physical device for real camera
+              {!Camera
+                ? 'Camera module not available'
+                : 'Camera preview not available'}
+            </Text>
+            <Text style={styles.simulatorSubtext}>
+              {!Camera
+                ? 'Mock scanning interface active'
+                : 'Use a physical device for real camera'}
             </Text>
           </View>
         </View>
