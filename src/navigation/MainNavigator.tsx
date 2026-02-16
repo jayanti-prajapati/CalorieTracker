@@ -1,7 +1,8 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { MainTabParamList } from '../types';
+import { Home, BarChart3, Plus, Users, User } from 'lucide-react-native';
+import { MainTabParamList } from '../features/meal/types';
 import DashboardScreen from '../features/dashboard/screens/DashboardScreen';
 import AddMealScreen from '../features/meal/screens/AddMealScreen';
 import WaterScreen from '../screens/water/WaterScreen';
@@ -59,15 +60,8 @@ const MainNavigator: React.FC = () => {
           options={{
             tabBarLabel: 'Home',
             tabBarIcon: ({ focused }) => (
-              <View>
-                <Text
-                  style={[
-                    styles.iconText,
-                    { color: focused ? '#FFFFFF' : '#000000' },
-                  ]}
-                >
-                  🏠
-                </Text>
+              <View style={[styles.tabIcon, focused && styles.activeTabIcon]}>
+                <Home size={20} color={focused ? '#FFFFFF' : '#666666'} />
               </View>
             ),
           }}
@@ -78,15 +72,8 @@ const MainNavigator: React.FC = () => {
           options={{
             tabBarLabel: 'Progress',
             tabBarIcon: ({ focused }) => (
-              <View>
-                <Text
-                  style={[
-                    styles.iconText,
-                    { color: focused ? '#FFFFFF' : '#666' },
-                  ]}
-                >
-                  📊
-                </Text>
+              <View style={[styles.tabIcon, focused && styles.activeTabIcon]}>
+                <BarChart3 size={20} color={focused ? '#FFFFFF' : '#666666'} />
               </View>
             ),
           }}
@@ -98,7 +85,7 @@ const MainNavigator: React.FC = () => {
             tabBarLabel: '',
             tabBarIcon: () => (
               <View style={styles.plusButton}>
-                <Text style={styles.plusIcon}>+</Text>
+                <Plus size={28} color="#FFFFFF" />
               </View>
             ),
           }}
@@ -109,15 +96,8 @@ const MainNavigator: React.FC = () => {
           options={{
             tabBarLabel: 'Groups',
             tabBarIcon: ({ focused }) => (
-              <View>
-                <Text
-                  style={[
-                    styles.iconText,
-                    { color: focused ? '#FFFFFF' : '#999' },
-                  ]}
-                >
-                  👥
-                </Text>
+              <View style={[styles.tabIcon, focused && styles.activeTabIcon]}>
+                <Users size={20} color={focused ? '#FFFFFF' : '#666666'} />
               </View>
             ),
           }}
@@ -128,15 +108,8 @@ const MainNavigator: React.FC = () => {
           options={{
             tabBarLabel: 'Profile',
             tabBarIcon: ({ focused }) => (
-              <View>
-                <Text
-                  style={[
-                    styles.iconText,
-                    { color: focused ? '#FFFFFF' : '#999' },
-                  ]}
-                >
-                  👤
-                </Text>
+              <View style={[styles.tabIcon, focused && styles.activeTabIcon]}>
+                <User size={20} color={focused ? '#FFFFFF' : '#666666'} />
               </View>
             ),
           }}
@@ -150,9 +123,10 @@ const styles = StyleSheet.create({
   tabIcon: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
+    padding: 20,
+    borderRadius: 28,
+    height: 24,
+    width: 24,
   },
   activeTabIcon: {
     backgroundColor: 'black',
@@ -161,9 +135,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 4,
     elevation: 4,
-  },
-  iconText: {
-    fontSize: 20,
   },
   plusButton: {
     width: 56,
@@ -178,11 +149,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 8,
-  },
-  plusIcon: {
-    color: '#FFFFFF',
-    fontSize: 24,
-    fontWeight: 'bold',
   },
 });
 

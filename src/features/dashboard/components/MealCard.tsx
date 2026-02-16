@@ -1,6 +1,7 @@
 import { MealEntry } from '../../meal/types';
 import { timeToMinutesAgo } from '../../../utils';
 import { View, Image, Text, StyleSheet } from 'react-native';
+import { Flame, Beef, Wheat, Droplets } from 'lucide-react-native';
 
 export const MealCard = ({ meal }: { meal: MealEntry }) => {
   return (
@@ -28,21 +29,21 @@ export const MealCard = ({ meal }: { meal: MealEntry }) => {
         </View>
 
         <View style={styles.mealCardCalories}>
-          <Text style={styles.calorieIcon}>🔥</Text>
+          <Flame size={16} color="#E65100" style={styles.iconSpacing} />
           <Text style={styles.mealCardCalorieText}>{meal?.calories} cal</Text>
         </View>
 
         <View style={styles.mealCardMacros}>
           <View style={styles.macroItem}>
-            <Text style={styles.macroIcon}>🥩</Text>
+            <Beef size={14} color="#8B4513" style={styles.iconSpacing} />
             <Text style={styles.macroAmount}>{meal?.protein}g</Text>
           </View>
           <View style={styles.macroItem}>
-            <Text style={styles.macroIcon}>🌾</Text>
+            <Wheat size={14} color="#DAA520" style={styles.iconSpacing} />
             <Text style={styles.macroAmount}>{meal?.carbs}g</Text>
           </View>
           <View style={styles.macroItem}>
-            <Text style={styles.macroIcon}>💧</Text>
+            <Droplets size={14} color="#4682B4" style={styles.iconSpacing} />
             <Text style={styles.macroAmount}>{meal?.fat}g</Text>
           </View>
         </View>
@@ -121,10 +122,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignSelf: 'flex-start',
   },
-  calorieIcon: {
-    fontSize: 14,
-    marginRight: 4,
-  },
   mealCardCalorieText: {
     fontSize: 15,
     fontWeight: '600',
@@ -145,13 +142,13 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: 2,
   },
-  macroIcon: {
-    fontSize: 12,
-    marginRight: 4,
-  },
   macroAmount: {
     fontSize: 12,
     color: '#495057',
     fontWeight: '600',
+    marginLeft: 4,
+  },
+  iconSpacing: {
+    marginRight: 6,
   },
 });
