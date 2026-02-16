@@ -580,9 +580,6 @@ const AddMealScreen: React.FC = () => {
           <Text style={styles.bottomButtonIcon}>🖼️</Text>
         </TouchableOpacity> */}
       </View>
-
-      {/* Bottom Indicator */}
-      <View style={styles.bottomIndicator} />
     </View>
   );
 };
@@ -711,7 +708,7 @@ const styles = StyleSheet.create({
   },
   scanOptions: {
     position: 'absolute',
-    bottom: 140,
+    bottom: 120,
     left: 0,
     right: 0,
     flexDirection: 'row',
@@ -720,19 +717,22 @@ const styles = StyleSheet.create({
   },
   scanOption: {
     alignItems: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
     borderRadius: 20,
-    minWidth: 80,
+    width: 100,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.3)',
+    borderStyle: 'dashed',
   },
   scanOptionActive: {
     backgroundColor: '#FFFFFF',
   },
   scanOptionIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255,255,255,0.2)',
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: '#fff',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 8,
@@ -751,7 +751,7 @@ const styles = StyleSheet.create({
   },
   bottomControls: {
     position: 'absolute',
-    bottom: 60,
+    bottom: 25,
     left: 0,
     right: 0,
     flexDirection: 'row',

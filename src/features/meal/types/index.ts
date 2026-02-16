@@ -6,7 +6,7 @@ export interface MealEntry {
     mealType: 'breakfast' | 'lunch' | 'dinner' | 'snack';
     name: string;
     quantity: number; // in grams
-    
+
     calories: number;
     protein: number;
     carbs: number;
@@ -79,7 +79,7 @@ export type OnboardingStackParamList = {
 export type MainTabParamList = {
     Dashboard: undefined;
     AddMeal: undefined;
-    Water: undefined;
+    Progress: undefined;
     Groups: undefined;
     Profile: undefined;
 };

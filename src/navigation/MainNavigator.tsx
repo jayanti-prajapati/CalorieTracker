@@ -5,8 +5,8 @@ import { Home, BarChart3, Plus, Users, User } from 'lucide-react-native';
 import { MainTabParamList } from '../features/meal/types';
 import DashboardScreen from '../features/dashboard/screens/DashboardScreen';
 import AddMealScreen from '../features/meal/screens/AddMealScreen';
-import WaterScreen from '../screens/water/WaterScreen';
 import ProfileScreen from '../screens/profile/ProfileScreen';
+import ProgressScreen from '../features/progress/screens/ProgressScreen';
 
 // Create a placeholder Groups screen
 const GroupsScreen: React.FC = () => (
@@ -67,8 +67,8 @@ const MainNavigator: React.FC = () => {
           }}
         />
         <Tab.Screen
-          name="Water"
-          component={WaterScreen}
+          name="Progress"
+          component={ProgressScreen}
           options={{
             tabBarLabel: 'Progress',
             tabBarIcon: ({ focused }) => (
