@@ -16,6 +16,7 @@ import { useMealStore } from '../../meal/stores/mealStore';
 import { timeToMinutesAgo } from '../../../utils';
 import { Card } from '../../../components/ui';
 import { MealCard } from '../components/MealCard';
+import { WeeklyCalendar } from '../components/WeeklyCalendar';
 
 const DashboardScreen: React.FC = () => {
   const { user } = useAuthStore();
@@ -59,25 +60,6 @@ const DashboardScreen: React.FC = () => {
         totalFat: 0,
       };
 
-  // Generate week dates
-  const getWeekDates = () => {
-    const dates = [];
-    const startOfWeek = new Date(selectedDate);
-    const day = startOfWeek.getDay();
-    const diff = startOfWeek.getDate() - day + (day === 0 ? -6 : 1); // Monday as first day
-    startOfWeek.setDate(diff);
-
-    for (let i = 0; i < 7; i++) {
-      const date = new Date(startOfWeek);
-      date.setDate(startOfWeek.getDate() + i);
-      dates.push(date);
-    }
-    return dates;
-  };
-
-  const weekDates = getWeekDates();
-  const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-
   const onRefresh = React.useCallback(() => {
     refreshDashboard();
   }, [refreshDashboard]);
@@ -110,38 +92,10 @@ const DashboardScreen: React.FC = () => {
         </View>
 
         {/* Weekly Calendar */}
-        <View style={styles.calendar}>
-          {weekDates.map((date, index) => {
-            const isSelected =
-              date.toDateString() === selectedDate.toDateString();
-            const isToday = date.toDateString() === new Date().toDateString();
-            return (
-              <TouchableOpacity
-                key={index}
-                style={[
-                  styles.calendarDay,
-                  isSelected && styles.selectedDay,
-                  isToday && styles.todayDay,
-                ]}
-                onPress={() => setSelectedDate(date)}
-              >
-                <Text
-                  style={[styles.dayName, isSelected && styles.selectedDayText]}
-                >
-                  {dayNames[index]}
-                </Text>
-                <Text
-                  style={[
-                    styles.dayNumber,
-                    isSelected && styles.selectedDayText,
-                  ]}
-                >
-                  {date.getDate()}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-        </View>
+        <WeeklyCalendar
+          selectedDate={selectedDate}
+          setSelectedDate={setSelectedDate}
+        />
 
         {/* Main Calorie Card */}
         <View style={styles.mainCard}>
@@ -323,7 +277,7 @@ const styles = StyleSheet.create({
   },
   mainCard: {
     backgroundColor: '#FFF',
-    marginHorizontal: 20,
+    marginHorizontal: 16,
     marginBottom: 24,
     padding: 24,
     borderRadius: 16,
