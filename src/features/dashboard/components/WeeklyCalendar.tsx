@@ -100,10 +100,10 @@ const styles = StyleSheet.create({
   calendarDay: {
     alignItems: 'center',
     paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 12,
+    paddingHorizontal: 8,
+    borderRadius: 14,
     marginHorizontal: 1,
-    width: 52,
+    width: 48,
   },
   selectedDay: {
     backgroundColor: '#1A1A1A',
