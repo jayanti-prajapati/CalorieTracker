@@ -84,6 +84,13 @@ export type MainTabParamList = {
     Profile: undefined;
 };
 
+export type ProfileStackParamList = {
+    ProfileMain: undefined;
+    PersonalDetails: undefined;
+    Preferences: undefined;
+    Language: undefined;
+};
+
 
 export interface WaterState {
     entries: WaterEntry[];

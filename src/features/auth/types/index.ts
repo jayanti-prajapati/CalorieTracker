@@ -1,5 +1,7 @@
 export interface User {
     id: string;
+
+    username: string;
     email: string;
     name: string;
     age: number;
@@ -10,8 +12,14 @@ export interface User {
     goal: 'lose' | 'maintain' | 'gain';
     bmr: number;
     tdee: number;
+    dateOfBirth: string;
+    goalWeight: number;
+    currentWeight: number;
+    dailyStepGoal: number;
     targetCalories: number;
     createdAt: string;
+    isPremium: boolean;
+    avatar: string;
     isOnboarded: boolean;
 }
 

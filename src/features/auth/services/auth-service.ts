@@ -40,6 +40,16 @@ export interface RegisterData {
     gender?: 'male' | 'female';
     activityLevel?: 'sedentary' | 'light' | 'moderate' | 'active';
     goal?: 'lose' | 'maintain' | 'gain';
+    bmr?: number;
+    tdee?: number;
+    targetCalories?: number;
+    goalWeight?: number;
+    currentWeight?: number;
+    dailyStepGoal?: number;
+    isPremium?: boolean;
+    avatar?: string;
+    isOnboarded?: boolean;
+    dateOfBirth?: string;
 }
 
 // Generate mock JWT token (simplified for demo)
@@ -139,6 +149,13 @@ class MockAuthService implements AuthService {
             targetCalories: 2712, // Would be calculated based on goal
             createdAt: new Date().toISOString(),
             isOnboarded: false,
+            username: userData.username || '',
+            dateOfBirth: userData.dateOfBirth || '01/01/2000',
+            goalWeight: userData.goalWeight || 0,
+            currentWeight: userData.currentWeight || 0,
+            dailyStepGoal: userData.dailyStepGoal || 0,
+            isPremium: false,
+            avatar: ''
         };
 
         // Add to mock database
