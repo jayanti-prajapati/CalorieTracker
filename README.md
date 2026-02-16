@@ -1,97 +1,226 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# 🍎 CalorieTracker - AI-Powered Nutrition App
 
-# Getting Started
+A modern React Native application for tracking calories and nutrition with AI-powered food recognition, built with TypeScript and featuring a beautiful, intuitive user interface.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+## ✨ Features
 
-## Step 1: Start Metro
+### 📸 Smart Food Scanning
+- **Camera Integration**: Scan food items, barcodes, and nutrition labels
+- **AI Recognition**: Advanced AI identifies food and calculates calories automatically
+- **Simulation Mode**: Fallback UI for development and testing without camera access
+- **Image Library**: Select food images from photo library
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+### 📊 Comprehensive Dashboard
+- **Daily Overview**: Track calories, protein, carbs, and fat intake
+- **Progress Visualization**: Beautiful charts and progress indicators
+- **15-Day Calendar**: Navigate through past and future dates with auto-centering
+- **Meal History**: View recent meals with elegant card-based layout
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+### 🎨 Modern UI/UX
+- **Design System**: Consistent typography, colors, and spacing tokens
+- **Lucide Icons**: Professional vector icons throughout the app
+- **Elegant Components**: Reusable UI components with proper styling
+- **Responsive Design**: Optimized for various screen sizes
 
-```sh
-# Using npm
-npm start
+### 🔐 Authentication & Onboarding
+- **User Authentication**: Secure login and registration system
+- **Onboarding Flow**: Guided setup for new users
+- **Profile Management**: User preferences and goal setting
 
-# OR using Yarn
-yarn start
+## 🏗️ Architecture
+
+### Tech Stack
+- **React Native 0.84** - Cross-platform mobile development
+- **TypeScript** - Type-safe development
+- **Zustand** - Lightweight state management
+- **React Navigation** - Navigation and routing
+- **Lucide React Native** - Modern icon system
+
+### Project Structure
+```
+src/
+├── components/ui/          # Reusable UI components
+├── features/
+│   ├── dashboard/         # Dashboard screens and components
+│   ├── meal/             # Meal tracking functionality
+│   └── auth/             # Authentication features
+├── navigation/           # Navigation configuration
+├── store/               # State management (Zustand)
+├── theme/               # Design system and tokens
+├── types/               # TypeScript type definitions
+└── utils/               # Utility functions
 ```
 
-## Step 2: Build and run your app
+### Key Components
+- **MealCard**: Elegant 40/60 layout with image and nutrition info
+- **WeeklyCalendar**: 15-day scrollable calendar with auto-centering
+- **CameraSimulation**: Fallback UI for camera functionality
+- **Design System**: Comprehensive theming and component library
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+## 🚀 Getting Started
 
-### Android
+### Prerequisites
+- Node.js (v16 or higher)
+- React Native development environment
+- iOS Simulator or Android Emulator
+- Xcode (for iOS development)
 
-```sh
-# Using npm
-npm run android
+### Installation
 
-# OR using Yarn
-yarn android
-```
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd CalorieTracker
+   ```
 
-### iOS
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
+3. **iOS Setup**
+   ```bash
+   cd ios && pod install && cd ..
+   ```
 
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
+4. **Start Metro bundler**
+   ```bash
+   npm start
+   # or
+   npx react-native start --reset-cache
+   ```
 
-```sh
-bundle install
-```
+5. **Run the app**
+   ```bash
+   # iOS
+   npm run ios
+   # or
+   yarn ios
+   
+   # Android
+   npm run android
+   # or
+   yarn android
+   ```
 
-Then, and every time you update your native dependencies, run:
+## 📱 App Flow
 
-```sh
-bundle exec pod install
-```
+### Navigation Structure
+- **Landing Screen**: Welcome and app introduction
+- **Authentication**: Sign in/Sign up flow
+- **Main Tab Navigator**:
+  - 🏠 **Home**: Dashboard with daily overview
+  - 📊 **Progress**: Nutrition tracking and analytics
+  - ➕ **Add Meal**: Camera-based food scanning
+  - 👥 **Groups**: Social features (coming soon)
+  - 👤 **Profile**: User settings and preferences
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+### Key User Journeys
+1. **Onboarding**: Welcome → Sign Up → Profile Setup → Dashboard
+2. **Add Meal**: Camera Scan → Food Recognition → Nutrition Review → Save
+3. **Track Progress**: Dashboard → Calendar Navigation → Meal History → Analytics
 
-```sh
-# Using npm
-npm run ios
+## 🎨 Design System
 
-# OR using Yarn
-yarn ios
-```
+### Color Palette
+- **Primary**: Black (#1A1A1A) for active states and emphasis
+- **Secondary**: Gray scale (#F8F9FA to #212529) for hierarchy
+- **Accent**: Orange (#E65100) for calories and important actions
+- **Semantic**: Themed colors for macros (brown, gold, blue)
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+### Typography
+- **Headings**: Bold weights (600-700) for hierarchy
+- **Body**: Regular (400-500) for readability
+- **Captions**: Light (300-400) for secondary information
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+### Components
+- **Cards**: Rounded corners (16-20px) with subtle shadows
+- **Buttons**: Consistent padding and border radius
+- **Icons**: 24px standard size, 14-16px for inline elements
 
-## Step 3: Modify your app
+## 🔧 Development
 
-Now that you have successfully run the app, let's make changes!
+### State Management
+Using Zustand for lightweight, TypeScript-friendly state management:
+- **Auth Store**: User authentication and profile data
+- **Dashboard Store**: Daily nutrition and meal data
+- **Meal Store**: Food entries and nutrition calculations
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+### Navigation
+React Navigation v6 with TypeScript support:
+- Stack navigation for auth flow
+- Tab navigation for main app
+- Proper type definitions for all routes
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+### Styling
+- **StyleSheet**: React Native's built-in styling
+- **Design Tokens**: Centralized theme configuration
+- **Responsive**: Flexible layouts that adapt to screen sizes
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+## 📦 Dependencies
 
-## Congratulations! :tada:
+### Core
+- `react-native`: ^0.84.0
+- `react`: ^18.3.1
+- `typescript`: ^5.0.4
 
-You've successfully run and modified your React Native App. :partying_face:
+### Navigation & UI
+- `@react-navigation/native`: Navigation framework
+- `@react-navigation/bottom-tabs`: Tab navigation
+- `lucide-react-native`: Modern icon system
 
-### Now what?
+### Camera & Media
+- `react-native-vision-camera`: Camera functionality
+- `react-native-image-picker`: Image selection
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
+### State & Storage
+- `zustand`: State management
+- `@react-native-async-storage/async-storage`: Local storage
 
-# Troubleshooting
+## 🐛 Troubleshooting
 
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+### Common Issues
 
-# Learn More
+1. **Metro bundler cache issues**
+   ```bash
+   npx react-native start --reset-cache
+   ```
 
-To learn more about React Native, take a look at the following resources:
+2. **iOS build issues**
+   ```bash
+   cd ios && pod install && cd ..
+   ```
 
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+3. **Module resolution errors**
+   - Check import paths and ensure files exist
+   - Verify TypeScript configuration in `tsconfig.json`
+
+4. **Camera permissions**
+   - Ensure proper permissions in `Info.plist` (iOS)
+   - Test with simulation mode if camera unavailable
+
+## 🚧 Future Enhancements
+
+- [ ] Barcode scanning integration
+- [ ] Nutrition label OCR
+- [ ] Social features and meal sharing
+- [ ] Advanced analytics and insights
+- [ ] Meal planning and recommendations
+- [ ] Integration with fitness trackers
+- [ ] Offline mode support
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+---
+
+Built with ❤️ using React Native and TypeScript
