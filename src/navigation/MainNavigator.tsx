@@ -6,7 +6,7 @@ import { MainTabParamList } from '../features/meal/types';
 import DashboardScreen from '../features/dashboard/screens/DashboardScreen';
 import AddMealScreen from '../features/meal/screens/AddMealScreen';
 import WaterScreen from '../screens/water/WaterScreen';
-import ProfileScreen from '../screens/profile/ProfileScreen';
+import ProfileNavigator from './ProfileNavigator';
 
 // Create a placeholder Groups screen
 const GroupsScreen: React.FC = () => (
@@ -104,7 +104,7 @@ const MainNavigator: React.FC = () => {
         />
         <Tab.Screen
           name="Profile"
-          component={ProfileScreen}
+          component={ProfileNavigator}
           options={{
             tabBarLabel: 'Profile',
             tabBarIcon: ({ focused }) => (
