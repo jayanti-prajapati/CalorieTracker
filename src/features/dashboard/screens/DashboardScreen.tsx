@@ -14,6 +14,8 @@ import { useDashboardStore } from '../stores/dashboardStore';
 import { lightTheme } from '../../../theme';
 import { useMealStore } from '../../meal/stores/mealStore';
 import { timeToMinutesAgo } from '../../../utils';
+import { Card } from '../../../components/ui';
+import { MealCard } from '../components/MealCard';
 
 const DashboardScreen: React.FC = () => {
   const { user } = useAuthStore();
@@ -163,87 +165,59 @@ const DashboardScreen: React.FC = () => {
         </View>
 
         {/* Macros Carousel */}
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={true}
-          contentContainerStyle={styles.macrosCarousel}
-          style={styles.macrosScrollView}
+        <View
+          style={{
+            paddingBottom: 20,
+            paddingHorizontal: 20,
+            alignItems: 'center',
+          }}
         >
-          <View style={styles.macroItem}>
-            <View style={[styles.macroCircle, styles.proteinCircle]}>
-              <Text style={styles.macroIcon}>🥩</Text>
-            </View>
-            <Text style={styles.macroValue}>
-              {dailyNutrition.totalProtein}/0g
-            </Text>
-            <Text style={styles.macroLabel}>Protein eaten</Text>
+          <View
+            style={{
+              flexDirection: 'row',
+              gap: 8,
+            }}
+          >
+            <Card style={{ width: '33%', alignItems: 'center' }}>
+              <View style={styles.macroItem}>
+                <View style={[styles.macroCircle, styles.proteinCircle]}>
+                  <Text style={styles.macroIcon}>🥩</Text>
+                </View>
+                <Text style={styles.macroValue}>
+                  {dailyNutrition.totalProtein}/0g
+                </Text>
+                <Text style={styles.macroLabel}>Protein eaten</Text>
+              </View>
+            </Card>
+            <Card style={{ width: '33%', alignItems: 'center' }}>
+              <View style={styles.macroItem}>
+                <View style={[styles.macroCircle, styles.carbsCircle]}>
+                  <Text style={styles.macroIcon}>🌾</Text>
+                </View>
+                <Text style={styles.macroValue}>
+                  {dailyNutrition.totalCarbs}/0g
+                </Text>
+                <Text style={styles.macroLabel}>Carbs eaten</Text>
+              </View>{' '}
+            </Card>
+            <Card style={{ width: '33%', alignItems: 'center' }}>
+              <View style={styles.macroItem}>
+                <View style={[styles.macroCircle, styles.fatCircle]}>
+                  <Text style={styles.macroIcon}>🧈</Text>
+                </View>
+                <Text style={styles.macroValue}>
+                  {dailyNutrition.totalFat}/0g
+                </Text>
+                <Text style={styles.macroLabel}>Fat eaten</Text>
+              </View>
+            </Card>
           </View>
-          <View style={styles.macroItem}>
-            <View style={[styles.macroCircle, styles.carbsCircle]}>
-              <Text style={styles.macroIcon}>🌾</Text>
-            </View>
-            <Text style={styles.macroValue}>
-              {dailyNutrition.totalCarbs}/0g
-            </Text>
-            <Text style={styles.macroLabel}>Carbs eaten</Text>
-          </View>
-          <View style={styles.macroItem}>
-            <View style={[styles.macroCircle, styles.fatCircle]}>
-              <Text style={styles.macroIcon}>🧈</Text>
-            </View>
-            <Text style={styles.macroValue}>{dailyNutrition.totalFat}/0g</Text>
-            <Text style={styles.macroLabel}>Fat eaten</Text>
-          </View>
-        </ScrollView>
+        </View>
 
         {/* Recently uploaded */}
         <View style={styles.recentMealsContainer}>
-          {meals?.map(meal => (
-            <View key={meal.id} style={styles.mealCard}>
-              {meal?.imageUrl ? (
-                <Image
-                  source={{ uri: meal.imageUrl }}
-                  style={styles.mealCardImage}
-                />
-              ) : (
-                <View style={styles.mealCardImagePlaceholder}>
-                  <Text style={styles.mealCardImageText}>
-                    {meal?.name?.charAt(0)}
-                  </Text>
-                </View>
-              )}
-              <View style={styles.mealCardContent}>
-                <View style={styles.mealCardHeader}>
-                  <Text style={styles.mealCardName} numberOfLines={1}>
-                    {meal.name}
-                  </Text>
-                  <Text style={styles.mealCardTime}>
-                    {timeToMinutesAgo(new Date(meal?.date))}
-                  </Text>
-                </View>
-                <View style={styles.mealCardCalories}>
-                  <Text style={styles.calorieIcon}>🔥</Text>
-                  <Text style={styles.mealCardCalorieText}>
-                    {meal?.calories} calories
-                  </Text>
-                </View>
-                <View style={styles.mealCardMacros}>
-                  <View style={styles.macroItem}>
-                    <Text style={styles.macroIcon}>🥩</Text>
-                    <Text style={styles.macroAmount}>{meal?.protein}g</Text>
-                  </View>
-                  <View style={styles.macroItem}>
-                    <Text style={styles.macroIcon}>🌾</Text>
-                    <Text style={styles.macroAmount}>{meal?.carbs}g</Text>
-                  </View>
-                  <View style={styles.macroItem}>
-                    <Text style={styles.macroIcon}>💧</Text>
-                    <Text style={styles.macroAmount}>{meal?.fat}g</Text>
-                  </View>
-                </View>
-              </View>
-            </View>
-          )) || (
+          <Text style={styles.recentMealsTitle}>Recently uploaded</Text>
+          {meals?.map(meal => <MealCard key={meal.id} meal={meal} />) || (
             <View style={styles.emptyMealsContainer}>
               <Text style={styles.emptyMealsText}>No meals logged today</Text>
               <Text style={styles.emptyMealsSubtext}>
@@ -251,25 +225,6 @@ const DashboardScreen: React.FC = () => {
               </Text>
             </View>
           )}
-        </View>
-
-        {/* Quick Stats */}
-        <View style={styles.statsCard}>
-          <Text style={styles.cardTitle}>Quick Stats</Text>
-          <View style={styles.statsContainer}>
-            <View style={styles.statItem}>
-              <Text style={styles.statValue}>
-                {dashboardData?.currentWeight || user?.weight || 0} kg
-              </Text>
-              <Text style={styles.statLabel}>Current Weight</Text>
-            </View>
-            <View style={styles.statItem}>
-              <Text style={styles.statValue}>
-                {dailyNutrition.targetCalories || 0}
-              </Text>
-              <Text style={styles.statLabel}>Daily Goal</Text>
-            </View>
-          </View>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -304,6 +259,12 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     color: '#1A1A1A',
+  },
+  recentMealsTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#1A1A1A',
+    paddingBottom: 8,
   },
   streakBadge: {
     flexDirection: 'row',
@@ -420,7 +381,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
   },
   macrosScrollView: {
-    marginBottom: 24,
+    marginBottom: 16,
   },
   macrosCarousel: {
     justifyContent: 'center',
@@ -428,6 +389,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     paddingVertical: 10,
     paddingHorizontal: 20,
+    gap: 8,
   },
   macrosContainer: {
     flexDirection: 'row',
