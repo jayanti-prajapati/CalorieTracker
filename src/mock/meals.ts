@@ -17,6 +17,9 @@ export const mockMeals: MealEntry[] = [
         date: new Date().toISOString(),
         createdAt: new Date().toISOString(),
         imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/Pomegranate_fruit_-_whole_and_piece_with_arils.jpg/1200px-Pomegranate_fruit_-_whole_and_piece_with_arils.jpg',
+        fiber: 0,
+        sugar: 0,
+        sodium: 0,
     },
     {
         id: '2',
@@ -30,6 +33,9 @@ export const mockMeals: MealEntry[] = [
         date: new Date().toISOString(),
         createdAt: new Date().toISOString(),
         imageUrl: 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=120&h=120&fit=crop',
+        fiber: 0,
+        sugar: 0,
+        sodium: 0,
     },
     {
         id: '3',
@@ -43,6 +49,9 @@ export const mockMeals: MealEntry[] = [
         date: new Date().toISOString(),
         createdAt: new Date().toISOString(),
         imageUrl: 'https://images.unsplash.com/photo-1563636619-e9143da7973b?w=120&h=120&fit=crop',
+        fiber: 0,
+        sugar: 0,
+        sodium: 0,
     },
     {
         id: '4',
@@ -56,6 +65,9 @@ export const mockMeals: MealEntry[] = [
         date: new Date().toISOString(),
         createdAt: new Date().toISOString(),
         imageUrl: 'https://images.unsplash.com/photo-1563636619-e9143da7973b?w=120&h=120&fit=crop',
+        fiber: 0,
+        sugar: 0,
+        sodium: 0,
     },
 ];
 

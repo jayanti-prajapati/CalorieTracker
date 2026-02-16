@@ -17,6 +17,7 @@ import { timeToMinutesAgo } from '../../../utils';
 import { Card } from '../../../components/ui';
 import { MealCard } from '../components/MealCard';
 import { WeeklyCalendar } from '../components/WeeklyCalendar';
+import { HealthCard } from '../components';
 
 const DashboardScreen: React.FC = () => {
   const { user } = useAuthStore();
@@ -25,7 +26,7 @@ const DashboardScreen: React.FC = () => {
     selectedDate: storeSelectedDate,
     isRefreshing,
     setSelectedDate: setStoreSelectedDate,
-    refreshDashboard,
+    refreshDashboard, 
   } = useDashboardStore();
   const { meals } = useMealStore();
   console.log(meals);
@@ -50,6 +51,9 @@ const DashboardScreen: React.FC = () => {
         totalProtein: dashboardData.stats.totalProtein,
         totalCarbs: dashboardData.stats.totalCarbs,
         totalFat: dashboardData.stats.totalFat,
+        totalFiber: dashboardData.stats.totalFiber,
+        totalSugar: dashboardData.stats.totalSugar,
+        totalSodium: dashboardData.stats.totalSodium,
       }
     : {
         totalCalories: 0,
@@ -58,6 +62,9 @@ const DashboardScreen: React.FC = () => {
         totalProtein: 0,
         totalCarbs: 0,
         totalFat: 0,
+        totalFiber: 0,
+        totalSugar: 0,
+        totalSodium: 0,
       };
 
   const onRefresh = React.useCallback(() => {
@@ -98,26 +105,35 @@ const DashboardScreen: React.FC = () => {
         />
 
         {/* Main Calorie Card */}
-        <View style={styles.mainCard}>
-          <View style={styles.calorieSection}>
-            <Text style={styles.calorieNumber}>
-              {dailyNutrition.totalCalories}
-            </Text>
-            <Text style={styles.calorieTarget}>
-              /{dailyNutrition.targetCalories}
-            </Text>
-            <Text style={styles.calorieLabel}>Calories eaten</Text>
-            <Text style={styles.calorieRemaining}>
-              🔥 +{Math.max(0, dailyNutrition.remainingCalories)}
-            </Text>
-          </View>
-          <View style={styles.circularProgress}>
-            <View style={styles.progressCircle}>
-              <Text style={styles.progressText}>🔥</Text>
+
+        <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+          <View style={{ ...styles.mainCard, width: '45%' }}>
+            <View style={styles.calorieSection}>
+              <Text style={styles.calorieNumber}>
+                {dailyNutrition.totalCalories}
+              </Text>
+              <Text style={styles.calorieTarget}>
+                /{dailyNutrition.targetCalories}
+              </Text>
+              <Text style={styles.calorieLabel}>Calories eaten</Text>
+              <Text style={styles.calorieRemaining}>
+                🔥 +{Math.max(0, dailyNutrition.remainingCalories)}
+              </Text>
+            </View>
+            <View style={styles.circularProgress}>
+              <View style={styles.progressCircle}>
+                <Text style={styles.progressText}>🔥</Text>
+              </View>
             </View>
           </View>
-        </View>
-
+          <View style={{ width: '50%', paddingLeft: 20 }}>
+            <HealthCard
+              maxScore={90}
+              score={dashboardData?.healthScore || 75}
+              recommendation="Your nutrition is well balanced. Keep up the excellent work!"
+            />
+          </View>
+        </ScrollView>
         {/* Macros Carousel */}
         <View
           style={{
@@ -126,13 +142,13 @@ const DashboardScreen: React.FC = () => {
             alignItems: 'center',
           }}
         >
-          <View
-            style={{
-              flexDirection: 'row',
-              gap: 8,
-            }}
-          >
-            <Card style={{ width: '33%', alignItems: 'center' }}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            <Card
+              style={{
+                alignItems: 'center',
+                marginRight: 8,
+              }}
+            >
               <View style={styles.macroItem}>
                 <View style={[styles.macroCircle, styles.proteinCircle]}>
                   <Text style={styles.macroIcon}>🥩</Text>
@@ -143,7 +159,7 @@ const DashboardScreen: React.FC = () => {
                 <Text style={styles.macroLabel}>Protein eaten</Text>
               </View>
             </Card>
-            <Card style={{ width: '33%', alignItems: 'center' }}>
+            <Card style={{ alignItems: 'center', marginHorizontal: 8 }}>
               <View style={styles.macroItem}>
                 <View style={[styles.macroCircle, styles.carbsCircle]}>
                   <Text style={styles.macroIcon}>🌾</Text>
@@ -154,7 +170,7 @@ const DashboardScreen: React.FC = () => {
                 <Text style={styles.macroLabel}>Carbs eaten</Text>
               </View>{' '}
             </Card>
-            <Card style={{ width: '33%', alignItems: 'center' }}>
+            <Card style={{ alignItems: 'center', marginHorizontal: 8 }}>
               <View style={styles.macroItem}>
                 <View style={[styles.macroCircle, styles.fatCircle]}>
                   <Text style={styles.macroIcon}>🧈</Text>
@@ -165,7 +181,40 @@ const DashboardScreen: React.FC = () => {
                 <Text style={styles.macroLabel}>Fat eaten</Text>
               </View>
             </Card>
-          </View>
+            <Card style={{ alignItems: 'center', marginHorizontal: 8 }}>
+              <View style={styles.macroItem}>
+                <View style={[styles.macroCircle, styles.proteinCircle]}>
+                  <Text style={styles.macroIcon}>🥩</Text>
+                </View>
+                <Text style={styles.macroValue}>
+                  {dailyNutrition.totalFiber}/0g
+                </Text>
+                <Text style={styles.macroLabel}>Fiber eaten</Text>
+              </View>
+            </Card>
+            <Card style={{ alignItems: 'center', marginHorizontal: 8 }}>
+              <View style={styles.macroItem}>
+                <View style={[styles.macroCircle, styles.carbsCircle]}>
+                  <Text style={styles.macroIcon}>🌾</Text>
+                </View>
+                <Text style={styles.macroValue}>
+                  {dailyNutrition.totalSugar}/0g
+                </Text>
+                <Text style={styles.macroLabel}>Sugar eaten</Text>
+              </View>{' '}
+            </Card>
+            <Card style={{ alignItems: 'center', marginLeft: 8 }}>
+              <View style={styles.macroItem}>
+                <View style={[styles.macroCircle, styles.fatCircle]}>
+                  <Text style={styles.macroIcon}>🧈</Text>
+                </View>
+                <Text style={styles.macroValue}>
+                  {dailyNutrition.totalFat}/0g
+                </Text>
+                <Text style={styles.macroLabel}>Fat eaten</Text>
+              </View>
+            </Card>
+          </ScrollView>
         </View>
 
         {/* Recently uploaded */}

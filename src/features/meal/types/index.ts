@@ -2,19 +2,27 @@
 
 export interface MealEntry {
     id: string;
-    quantity: number; // in grams
+
     mealType: 'breakfast' | 'lunch' | 'dinner' | 'snack';
-    date: string; // ISO date string
-    createdAt: string;
     name: string;
+    quantity: number; // in grams
+    
     calories: number;
     protein: number;
     carbs: number;
     fat: number;
+    fiber: number;
+    sugar: number;
+    sodium: number;
+
     barcode?: string;
     brand?: string;
     category?: string;
     imageUrl?: string;
+
+    date: string; // ISO date string
+    createdAt: string;
+
 }
 
 export interface WaterEntry {

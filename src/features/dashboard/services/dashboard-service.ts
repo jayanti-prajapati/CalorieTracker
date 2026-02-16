@@ -50,6 +50,10 @@ class MockDashboardService implements DashboardService {
             const targetCarbs = Math.round((targetCalories * 0.45) / 4); // 45% carbs
             const targetFat = Math.round((targetCalories * 0.30) / 9); // 30% fat
 
+            const totalFiber = mockMeals.reduce((sum, meal) => sum + meal.fiber, 0);
+            const totalSugar = mockMeals.reduce((sum, meal) => sum + meal.sugar, 0);
+            const totalSodium = mockMeals.reduce((sum, meal) => sum + meal.sodium, 0);
+
             const stats: DashboardStats = {
                 totalCalories,
                 targetCalories,
@@ -64,6 +68,9 @@ class MockDashboardService implements DashboardService {
                 proteinProgress: targetProtein > 0 ? (totalProtein / targetProtein) * 100 : 0,
                 carbsProgress: targetCarbs > 0 ? (totalCarbs / targetCarbs) * 100 : 0,
                 fatProgress: targetFat > 0 ? (totalFat / targetFat) * 100 : 0,
+                totalFiber,
+                totalSugar,
+                totalSodium,
             };
 
             const dashboardData: DashboardData = {
@@ -102,10 +109,16 @@ class MockDashboardService implements DashboardService {
             const totalProtein = mockMeals.reduce((sum, meal) => sum + meal.protein, 0);
             const totalCarbs = mockMeals.reduce((sum, meal) => sum + meal.carbs, 0);
             const totalFat = mockMeals.reduce((sum, meal) => sum + meal.fat, 0);
+            const totalFiber = mockMeals.reduce((sum, meal) => sum + meal.fiber, 0);
+            const totalSugar = mockMeals.reduce((sum, meal) => sum + meal.sugar, 0);
+            const totalSodium = mockMeals.reduce((sum, meal) => sum + meal.sodium, 0);
 
             const targetProtein = Math.round((targetCalories * 0.25) / 4);
             const targetCarbs = Math.round((targetCalories * 0.45) / 4);
             const targetFat = Math.round((targetCalories * 0.30) / 9);
+
+            const healthScore = 75; // TODO: Calculate  formula
+
 
             const stats: DashboardStats = {
                 totalCalories,
@@ -121,6 +134,10 @@ class MockDashboardService implements DashboardService {
                 proteinProgress: targetProtein > 0 ? (totalProtein / targetProtein) * 100 : 0,
                 carbsProgress: targetCarbs > 0 ? (totalCarbs / targetCarbs) * 100 : 0,
                 fatProgress: targetFat > 0 ? (totalFat / targetFat) * 100 : 0,
+                totalFiber,
+                totalSugar,
+                totalSodium,
+                healthScore,
             };
 
             return {

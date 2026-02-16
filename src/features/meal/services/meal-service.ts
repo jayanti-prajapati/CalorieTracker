@@ -123,7 +123,7 @@ class MockMealService implements MealService {
             foodName: meal.name,
             quantity: meal.quantity,
             mealType: meal.mealType,
-            date: meal.date
+            date: meal.date,
         });
 
         await simulateNetworkDelay(500);

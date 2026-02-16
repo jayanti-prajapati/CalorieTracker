@@ -12,6 +12,10 @@ export interface DashboardStats {
     proteinProgress: number;
     carbsProgress: number;
     fatProgress: number;
+    totalFiber: number;
+    totalSugar: number;
+    totalSodium: number;
+    healthScore: number;
 }
 
 export interface RecentMeal {
