@@ -16,7 +16,7 @@ import { useMealStore } from '../stores/mealStore';
 import { mealService } from '../services/meal-service';
 import { MealEntry } from '../types';
 import { CameraSimulation } from '../components/CameraSimulation';
-
+import { PermissionsAndroid } from 'react-native';
 // Conditional import with error handling for react-native-vision-camera
 let Camera: any = null;
 let useCameraDevices: any = () => [];
@@ -74,6 +74,24 @@ const AddMealScreen: React.FC = () => {
         setSimulationMode(true);
         console.log('🎭 Simulation mode enabled - no camera/device available');
         return;
+      }
+      if (Platform.OS === 'android') {
+        try {
+          const granted = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.CAMERA,
+            {
+              title: 'Camera Permission',
+              message: 'App needs access to your camera',
+              buttonNeutral: 'Ask Me Later',
+              buttonNegative: 'Cancel',
+              buttonPositive: 'OK',
+            },
+          );
+          return granted === PermissionsAndroid.RESULTS.GRANTED;
+        } catch (err) {
+          console.warn(err);
+          return false;
+        }
       }
 
       const permission = await getCameraPermissionStatus();
@@ -206,7 +224,7 @@ const AddMealScreen: React.FC = () => {
 
     const randomLabel =
       mockNutritionLabels[
-        Math.floor(Math.random() * mockNutritionLabels.length)
+      Math.floor(Math.random() * mockNutritionLabels.length)
       ] || mockNutritionLabels[0];
 
     console.log('🎭 Simulating nutrition label scan:', randomLabel?.name);
