@@ -165,7 +165,7 @@ const DashboardScreen: React.FC = () => {
         {/* Macros Carousel */}
         <ScrollView
           horizontal
-          showsHorizontalScrollIndicator={false}
+          showsHorizontalScrollIndicator={true}
           contentContainerStyle={styles.macrosCarousel}
           style={styles.macrosScrollView}
         >
@@ -344,7 +344,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#1A1A1A',
   },
   todayDay: {
-    backgroundColor: '#E3F2FD',
+    borderColor: '#1A1A1A',
+    borderWidth: 1,
   },
   dayName: {
     fontSize: 12,
@@ -422,10 +423,11 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   macrosCarousel: {
-    paddingHorizontal: 20,
     justifyContent: 'center',
     alignItems: 'center',
     flexGrow: 1,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
   },
   macrosContainer: {
     flexDirection: 'row',
@@ -434,8 +436,8 @@ const styles = StyleSheet.create({
   },
   macroItem: {
     alignItems: 'center',
-    marginRight: 24,
     minWidth: 80,
+    flex: 1,
   },
   macroCircle: {
     width: 60,
