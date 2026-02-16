@@ -15,6 +15,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useMealStore } from '../stores/mealStore';
 import { mealService } from '../services/meal-service';
 import { MealEntry } from '../types';
+import { CameraSimulation } from '../components/CameraSimulation';
 
 // Conditional import with error handling for react-native-vision-camera
 let Camera: any = null;
@@ -159,14 +160,7 @@ const AddMealScreen: React.FC = () => {
       const response = await mealService.getFoodByBarcode(randomBarcode);
       const food = response.data;
 
-      Alert.alert(
-        '🎭 Simulation: Food Found!',
-        `Scanned Barcode: ${randomBarcode}\nFound: ${food.name}\nCalories: ${food.calories} per 100g`,
-        [
-          { text: 'Cancel', style: 'cancel' },
-          { text: 'Add to Meal', onPress: () => showAddMealDialog(food) },
-        ],
-      );
+      showAddMealDialog(food);
     } catch (error) {
       Alert.alert(
         '🎭 Simulation: Not Found',
@@ -177,40 +171,15 @@ const AddMealScreen: React.FC = () => {
 
   const simulateFoodScanning = async () => {
     // Simulate food recognition with realistic results
-    const mockFoodResults = [
-      'apple',
-      'banana',
-      'orange',
-      'chicken breast',
-      'salmon',
-      'broccoli',
-      'rice',
-      'bread',
-      'pasta',
-      'avocado',
-      'tomato',
-      'spinach',
-    ];
-    const randomFood =
-      mockFoodResults[Math.floor(Math.random() * mockFoodResults.length)] ||
-      'apple';
 
     try {
-      console.log('🎭 Simulating food recognition:', randomFood);
-      const response = await mealService.searchFoods(randomFood);
+      const response = await mealService.searchFoods('');
       const foods = response.data;
 
       if (foods.length > 0) {
         const food = foods[0];
         if (food) {
-          Alert.alert(
-            '🎭 Simulation: Food Recognized!',
-            `AI Detected: ${food.name}\nCalories: ${food.calories} per 100g\nProtein: ${food.protein}g | Carbs: ${food.carbs}g | Fat: ${food.fat}g`,
-            [
-              { text: 'Wrong Food', style: 'cancel' },
-              { text: 'Add to Meal', onPress: () => showAddMealDialog(food) },
-            ],
-          );
+          showAddMealDialog(food);
         }
       } else {
         Alert.alert(
@@ -253,15 +222,7 @@ const AddMealScreen: React.FC = () => {
       brand: 'Scanned Label',
       category: 'packaged',
     };
-
-    Alert.alert(
-      '🎭 Simulation: Label Scanned!',
-      `OCR Detected: ${mockFood.name}\nPer Serving:\nCalories: ${mockFood.calories}\nProtein: ${mockFood.protein}g | Carbs: ${mockFood.carbs}g | Fat: ${mockFood.fat}g`,
-      [
-        { text: 'Scan Again', style: 'cancel' },
-        { text: 'Add to Meal', onPress: () => showAddMealDialog(mockFood) },
-      ],
-    );
+    showAddMealDialog(mockFood);
   };
 
   const processPhoto = async (photoPath: string, mode: ScanMode) => {
@@ -293,15 +254,7 @@ const AddMealScreen: React.FC = () => {
     try {
       const response = await mealService.getFoodByBarcode(mockBarcode);
       const food = response.data;
-
-      Alert.alert(
-        'Food Found!',
-        `Found: ${food.name}\nCalories: ${food.calories} per 100g`,
-        [
-          { text: 'Cancel', style: 'cancel' },
-          { text: 'Add to Meal', onPress: () => showAddMealDialog(food) },
-        ],
-      );
+      showAddMealDialog(food);
     } catch (error) {
       Alert.alert('Not Found', 'No food found for this barcode');
     }
@@ -380,7 +333,6 @@ const AddMealScreen: React.FC = () => {
         quantity: quantity,
         mealType: 'snack' as const,
         date: today,
-        time: new Date().toISOString(),
         calories: food.calories,
         protein: food.protein,
         carbs: food.carbs,
@@ -396,20 +348,9 @@ const AddMealScreen: React.FC = () => {
 
       await mealService.addMeal(mealEntry);
 
-      // Show success message and navigate back to dashboard
-      Alert.alert(
-        'Success!',
-        `Added ${quantity}g of ${food.name} to your meals!`,
-        [
-          {
-            text: 'OK',
-            onPress: () => {
-              // Navigate back to Dashboard tab
-              navigation.navigate('Dashboard' as never);
-            },
-          },
-        ],
-      );
+      setTimeout(() => {
+        navigation.navigate('Dashboard' as never);
+      }, 1000);
     } catch (error) {
       Alert.alert('Error', 'Failed to add meal');
     }
@@ -425,10 +366,6 @@ const AddMealScreen: React.FC = () => {
         if (response.assets && response.assets[0]) {
           const asset = response.assets[0];
           console.log('Image selected:', asset.uri);
-          Alert.alert(
-            'Image Selected',
-            `Scan mode: ${selectedMode}\nImage: ${asset.fileName}`,
-          );
         }
       },
     );
@@ -482,36 +419,11 @@ const AddMealScreen: React.FC = () => {
           zoom={zoomLevel === '1x' ? 1 : 0.5}
         />
       ) : (
-        <View style={styles.cameraBackground}>
-          <View style={styles.simulatorOverlay}>
-            <Text style={styles.simulatorText}>
-              {simulationMode
-                ? '🎭 Simulation Mode'
-                : !Camera
-                ? '📷 Camera Module'
-                : '📱 iOS Simulator'}
-            </Text>
-            <Text style={styles.simulatorSubtext}>
-              {simulationMode
-                ? 'Mock scanning active - tap capture to simulate'
-                : !Camera
-                ? 'Camera module not available'
-                : 'Camera preview not available'}
-            </Text>
-            <Text style={styles.simulatorSubtext}>
-              {simulationMode
-                ? `Current mode: ${selectedMode.toUpperCase()} scanning`
-                : !Camera
-                ? 'Mock scanning interface active'
-                : 'Use a physical device for real camera'}
-            </Text>
-            {simulationMode && (
-              <View style={styles.simulationIndicator}>
-                <Text style={styles.simulationBadge}>🎭 SIMULATION</Text>
-              </View>
-            )}
-          </View>
-        </View>
+        <CameraSimulation
+          simulationMode={simulationMode}
+          selectedMode={selectedMode}
+          Camera={Camera}
+        />
       )}
 
       {/* Header */}
@@ -538,7 +450,7 @@ const AddMealScreen: React.FC = () => {
       </View>
 
       {/* Zoom Controls */}
-      <View style={styles.zoomContainer}>
+      {/* <View style={styles.zoomContainer}>
         <TouchableOpacity
           style={[
             styles.zoomButton,
@@ -571,7 +483,7 @@ const AddMealScreen: React.FC = () => {
             1x
           </Text>
         </TouchableOpacity>
-      </View>
+      </View> */}
 
       {/* Scan Mode Options */}
       <View style={styles.scanOptions}>
@@ -638,9 +550,9 @@ const AddMealScreen: React.FC = () => {
 
       {/* Bottom Controls */}
       <View style={styles.bottomControls}>
-        <TouchableOpacity style={styles.bottomButton}>
+        {/* <TouchableOpacity style={styles.bottomButton}>
           <Text style={styles.bottomButtonIcon}>✨</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
         <TouchableOpacity
           style={[
@@ -661,12 +573,12 @@ const AddMealScreen: React.FC = () => {
           )}
         </TouchableOpacity>
 
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={styles.bottomButton}
           onPress={openImageLibrary}
         >
           <Text style={styles.bottomButtonIcon}>🖼️</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
 
       {/* Bottom Indicator */}

@@ -11,7 +11,6 @@ const simulateNetworkDelay = (ms: number = 800): Promise<void> => {
 // Dashboard Service Interface
 export interface DashboardService {
     getDashboardData(date: string, userId?: string): Promise<ApiResponse<DashboardData>>;
-    getRecentMeals(userId?: string, filters?: DashboardFilters): Promise<ApiResponse<RecentMeal[]>>;
     getDashboardStats(date: string, userId?: string): Promise<ApiResponse<DashboardStats>>;
     updateStreakCount(userId: string): Promise<ApiResponse<{ streakCount: number }>>;
 }
@@ -88,35 +87,7 @@ class MockDashboardService implements DashboardService {
         }
     }
 
-    async getRecentMeals(userId?: string, filters?: DashboardFilters): Promise<ApiResponse<RecentMeal[]>> {
-        console.log('🍽️ Dashboard Service: Loading recent meals', { userId, filters });
 
-        await simulateNetworkDelay(400);
-
-        try {
-            let filteredMeals = [...mockMeals];
-
-            // Apply filters if provided
-            if (filters?.mealType) {
-                // In a real app, meals would have mealType property
-                // For now, we'll return all meals
-            }
-
-            if (filters?.dateRange) {
-                // In a real app, we'd filter by date range
-                // For now, we'll return all meals
-            }
-
-            return {
-                data: filteredMeals,
-                message: 'Recent meals loaded successfully',
-                success: true,
-            };
-        } catch (error) {
-            console.error('❌ Dashboard Service: Failed to load recent meals', error);
-            throw new ApiError('Failed to load recent meals', 'MEALS_LOAD_ERROR');
-        }
-    }
 
     async getDashboardStats(date: string, userId?: string): Promise<ApiResponse<DashboardStats>> {
         console.log('📈 Dashboard Service: Loading dashboard stats', { date, userId });

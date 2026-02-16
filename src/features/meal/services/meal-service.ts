@@ -20,6 +20,7 @@ export interface MealService {
     getMealsForDate(date: string, userId?: string): Promise<ApiResponse<MealEntry[]>>;
     getDailyNutrition(date: string, userId?: string): Promise<ApiResponse<DailyNutrition>>;
     getMealHistory(userId?: string, days?: number): Promise<ApiResponse<MealEntry[]>>;
+
 }
 
 // Custom error class for API errors
@@ -38,17 +39,19 @@ class ApiError extends Error {
 class MockMealService implements MealService {
     private meals: MealEntry[] = [...mockMeals];
 
+
     async searchFoods(query: string): Promise<ApiResponse<MealEntry[]>> {
         console.log('🔍 Meal Service: Searching foods', { query });
 
         await simulateNetworkDelay(400);
 
         try {
-            const searchResults = mockMeals.filter(meal =>
-                meal.name.toLowerCase().includes(query.toLowerCase()) ||
-                meal.brand?.toLowerCase().includes(query.toLowerCase()) ||
-                meal.category?.toLowerCase().includes(query.toLowerCase())
-            );
+            const searchResults = mockMeals;
+            // .filter(meal =>
+            //     meal.name.toLowerCase().includes(query.toLowerCase()) ||
+            //     meal.brand?.toLowerCase().includes(query.toLowerCase()) ||
+            //     meal.category?.toLowerCase().includes(query.toLowerCase())
+            // );
 
             // Limit results to 20 for performance
             const limitedResults = searchResults.slice(0, 20);
@@ -69,13 +72,13 @@ class MockMealService implements MealService {
         }
     }
 
-    async getFoodById(foodId: string): Promise<ApiResponse<MealEntry>> {
-        console.log('🍎 Meal Service: Getting food by ID', { foodId });
+    async getFoodById(mealId: string): Promise<ApiResponse<MealEntry>> {
+        console.log('🍎 Meal Service: Getting food by ID', { mealId });
 
         await simulateNetworkDelay(200);
 
         try {
-            const food = mockMeals.find(f => f.id === foodId);
+            const food = mockMeals.find(f => f.id === mealId);
             if (!food) {
                 throw new ApiError('Food not found', 'FOOD_NOT_FOUND');
             }
@@ -98,7 +101,7 @@ class MockMealService implements MealService {
         await simulateNetworkDelay(800);
 
         try {
-            const food = mockMeals.find(f => f.barcode === barcode);
+            const food = mockMeals[0]; //find(f => f.barcode === barcode);
             if (!food) {
                 throw new ApiError('Food not found for barcode', 'BARCODE_NOT_FOUND');
             }
@@ -136,7 +139,7 @@ class MockMealService implements MealService {
             this.meals.push(newMeal);
 
             console.log('✅ Meal Service: Meal added successfully', { mealId: newMeal.id });
-
+            console.log('Meal Service: Mock meals', this.meals);
             return {
                 data: newMeal,
                 message: 'Meal added successfully',

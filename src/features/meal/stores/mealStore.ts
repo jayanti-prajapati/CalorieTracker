@@ -3,11 +3,12 @@ import { storage } from '../../../utils/storage';
 import { MealState, MealEntry, DailyNutrition } from '../types';
 import { mealService, isApiError, getErrorMessage } from '../services/meal-service';
 import { useAuthStore } from '../../auth/stores/authStore';
+import { mockMeals } from '../../../mock/meals';
 
 // Using safe storage wrapper that handles AsyncStorage errors
 
 export const useMealStore = create<MealState>((set, get) => ({
-    meals: [],
+    meals: [...mockMeals],
     dailyNutrition: {},
     isLoading: false,
 

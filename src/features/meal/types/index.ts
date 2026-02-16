@@ -7,7 +7,6 @@ export interface MealEntry {
     date: string; // ISO date string
     createdAt: string;
     name: string;
-    time: string;
     calories: number;
     protein: number;
     carbs: number;

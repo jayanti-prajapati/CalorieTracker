@@ -12,6 +12,8 @@ import {
 import { useAuthStore } from '../../auth/stores/authStore';
 import { useDashboardStore } from '../stores/dashboardStore';
 import { lightTheme } from '../../../theme';
+import { useMealStore } from '../../meal/stores/mealStore';
+import { timeToMinutesAgo } from '../../../utils';
 
 const DashboardScreen: React.FC = () => {
   const { user } = useAuthStore();
@@ -22,7 +24,8 @@ const DashboardScreen: React.FC = () => {
     setSelectedDate: setStoreSelectedDate,
     refreshDashboard,
   } = useDashboardStore();
-
+  const { meals } = useMealStore();
+  console.log(meals);
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   // Sync local selectedDate with store
@@ -194,141 +197,60 @@ const DashboardScreen: React.FC = () => {
         </ScrollView>
 
         {/* Recently uploaded */}
-        <View style={styles.recentMeals}>
-          <Text style={styles.cardTitle}>Recently uploaded</Text>
-
-          {/* Whole Pomegranate */}
-          <View style={styles.mealCard}>
-            <Image
-              source={{
-                uri: 'https://images.unsplash.com/photo-1570197788417-0e82375c9371?w=120&h=120&fit=crop',
-              }}
-              style={styles.mealCardImage}
-            />
-            <View style={styles.mealCardContent}>
-              <View style={styles.mealCardHeader}>
-                <Text style={styles.mealCardName}>Whole Pomegra...</Text>
-                <Text style={styles.mealCardTime}>3:31 PM</Text>
-              </View>
-              <View style={styles.mealCardCalories}>
-                <Text style={styles.calorieIcon}>🔥</Text>
-                <Text style={styles.mealCardCalorieText}>105 calories</Text>
-              </View>
-              <View style={styles.mealCardMacros}>
-                <View style={styles.macroItem}>
-                  <Text style={styles.macroIcon}>🥩</Text>
-                  <Text style={styles.macroAmount}>1g</Text>
+        <View style={styles.recentMealsContainer}>
+          {meals?.map(meal => (
+            <View key={meal.id} style={styles.mealCard}>
+              {meal?.imageUrl ? (
+                <Image
+                  source={{ uri: meal.imageUrl }}
+                  style={styles.mealCardImage}
+                />
+              ) : (
+                <View style={styles.mealCardImagePlaceholder}>
+                  <Text style={styles.mealCardImageText}>
+                    {meal?.name?.charAt(0)}
+                  </Text>
                 </View>
-                <View style={styles.macroItem}>
-                  <Text style={styles.macroIcon}>🌾</Text>
-                  <Text style={styles.macroAmount}>26g</Text>
+              )}
+              <View style={styles.mealCardContent}>
+                <View style={styles.mealCardHeader}>
+                  <Text style={styles.mealCardName} numberOfLines={1}>
+                    {meal.name}
+                  </Text>
+                  <Text style={styles.mealCardTime}>
+                    {timeToMinutesAgo(new Date(meal?.date))}
+                  </Text>
                 </View>
-                <View style={styles.macroItem}>
-                  <Text style={styles.macroIcon}>💧</Text>
-                  <Text style={styles.macroAmount}>0g</Text>
+                <View style={styles.mealCardCalories}>
+                  <Text style={styles.calorieIcon}>🔥</Text>
+                  <Text style={styles.mealCardCalorieText}>
+                    {meal?.calories} calories
+                  </Text>
                 </View>
-              </View>
-            </View>
-          </View>
-
-          {/* Half Banana */}
-          <View style={styles.mealCard}>
-            <Image
-              source={{
-                uri: 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=120&h=120&fit=crop',
-              }}
-              style={styles.mealCardImage}
-            />
-            <View style={styles.mealCardContent}>
-              <View style={styles.mealCardHeader}>
-                <Text style={styles.mealCardName}>Half Banana</Text>
-                <Text style={styles.mealCardTime}>12:46 PM</Text>
-              </View>
-              <View style={styles.mealCardCalories}>
-                <Text style={styles.calorieIcon}>🔥</Text>
-                <Text style={styles.mealCardCalorieText}>51 calories</Text>
-              </View>
-              <View style={styles.mealCardMacros}>
-                <View style={styles.macroItem}>
-                  <Text style={styles.macroIcon}>🥩</Text>
-                  <Text style={styles.macroAmount}>1g</Text>
-                </View>
-                <View style={styles.macroItem}>
-                  <Text style={styles.macroIcon}>🌾</Text>
-                  <Text style={styles.macroAmount}>13g</Text>
-                </View>
-                <View style={styles.macroItem}>
-                  <Text style={styles.macroIcon}>💧</Text>
-                  <Text style={styles.macroAmount}>0g</Text>
+                <View style={styles.mealCardMacros}>
+                  <View style={styles.macroItem}>
+                    <Text style={styles.macroIcon}>🥩</Text>
+                    <Text style={styles.macroAmount}>{meal?.protein}g</Text>
+                  </View>
+                  <View style={styles.macroItem}>
+                    <Text style={styles.macroIcon}>🌾</Text>
+                    <Text style={styles.macroAmount}>{meal?.carbs}g</Text>
+                  </View>
+                  <View style={styles.macroItem}>
+                    <Text style={styles.macroIcon}>💧</Text>
+                    <Text style={styles.macroAmount}>{meal?.fat}g</Text>
+                  </View>
                 </View>
               </View>
             </View>
-          </View>
-
-          {/* Tea */}
-          <View style={styles.mealCard}>
-            <View style={styles.mealCardImagePlaceholder}>
-              <Text style={styles.mealCardImageText}>Tea</Text>
+          )) || (
+            <View style={styles.emptyMealsContainer}>
+              <Text style={styles.emptyMealsText}>No meals logged today</Text>
+              <Text style={styles.emptyMealsSubtext}>
+                Tap the camera to add your first meal!
+              </Text>
             </View>
-            <View style={styles.mealCardContent}>
-              <View style={styles.mealCardHeader}>
-                <Text style={styles.mealCardName}>Tea</Text>
-                <Text style={styles.mealCardTime}>12:13 PM</Text>
-              </View>
-              <View style={styles.mealCardCalories}>
-                <Text style={styles.calorieIcon}>🔥</Text>
-                <Text style={styles.mealCardCalorieText}>50 calories</Text>
-              </View>
-              <View style={styles.mealCardMacros}>
-                <View style={styles.macroItem}>
-                  <Text style={styles.macroIcon}>🥩</Text>
-                  <Text style={styles.macroAmount}>1g</Text>
-                </View>
-                <View style={styles.macroItem}>
-                  <Text style={styles.macroIcon}>🌾</Text>
-                  <Text style={styles.macroAmount}>0g</Text>
-                </View>
-                <View style={styles.macroItem}>
-                  <Text style={styles.macroIcon}>💧</Text>
-                  <Text style={styles.macroAmount}>1g</Text>
-                </View>
-              </View>
-            </View>
-          </View>
-
-          {/* Frothed Milk */}
-          <View style={styles.mealCard}>
-            <Image
-              source={{
-                uri: 'https://images.unsplash.com/photo-1563636619-e9143da7973b?w=120&h=120&fit=crop',
-              }}
-              style={styles.mealCardImage}
-            />
-            <View style={styles.mealCardContent}>
-              <View style={styles.mealCardHeader}>
-                <Text style={styles.mealCardName}>Frothed Milk</Text>
-                <Text style={styles.mealCardTime}>10:36 AM</Text>
-              </View>
-              <View style={styles.mealCardCalories}>
-                <Text style={styles.calorieIcon}>🔥</Text>
-                <Text style={styles.mealCardCalorieText}>220 calories</Text>
-              </View>
-              <View style={styles.mealCardMacros}>
-                <View style={styles.macroItem}>
-                  <Text style={styles.macroIcon}>🥩</Text>
-                  <Text style={styles.macroAmount}>11g</Text>
-                </View>
-                <View style={styles.macroItem}>
-                  <Text style={styles.macroIcon}>🌾</Text>
-                  <Text style={styles.macroAmount}>16g</Text>
-                </View>
-                <View style={styles.macroItem}>
-                  <Text style={styles.macroIcon}>💧</Text>
-                  <Text style={styles.macroAmount}>12g</Text>
-                </View>
-              </View>
-            </View>
-          </View>
+          )}
         </View>
 
         {/* Quick Stats */}
@@ -743,6 +665,29 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666',
     marginLeft: 4,
+  },
+  recentMealsContainer: {
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+  },
+  emptyMealsContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 40,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    marginHorizontal: 20,
+  },
+  emptyMealsText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#1A1A1A',
+    marginBottom: 8,
+  },
+  emptyMealsSubtext: {
+    fontSize: 14,
+    color: '#666',
+    textAlign: 'center',
   },
 });
 
