@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, SafeAreaView, StatusBar } from 'react-native';
+import { View, StyleSheet, SafeAreaView, StatusBar, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '../../../types';
@@ -28,11 +28,13 @@ const LandingScreen: React.FC = () => {
       {/* Header with App Logo */}
       <View style={styles.header}>
         <View style={styles.logoContainer}>
-          <Typography variant="h1" style={styles.logoIcon}>
-            🍎
-          </Typography>
+          <Image
+            source={require('../../../assets/logo.png')}
+            style={styles.logoIcon}
+          />
+
           <Typography variant="h2" weight="bold" color="gray900">
-            Cal AI
+            CalShotAI
           </Typography>
         </View>
       </View>
@@ -58,81 +60,6 @@ const LandingScreen: React.FC = () => {
             Simply scan your food and let our AI do the rest. Get accurate
             calorie counts and nutritional insights instantly.
           </Typography>
-        </View>
-
-        {/* Features */}
-        <View style={styles.featuresContainer}>
-          <View style={styles.featureWrapper}>
-            <Card variant="elevated" padding={5} style={styles.featureCard}>
-              <Typography
-                variant="h1"
-                align="center"
-                style={styles.featureIcon}
-              >
-                📸
-              </Typography>
-              <Typography
-                variant="h6"
-                weight="semibold"
-                align="center"
-                color="gray900"
-                style={styles.featureTitle}
-              >
-                Smart Scanning
-              </Typography>
-              <Typography variant="body2" align="center" color="gray600">
-                Scan food, barcodes, or nutrition labels
-              </Typography>
-            </Card>
-          </View>
-
-          <View style={styles.featureWrapper}>
-            <Card variant="elevated" padding={5} style={styles.featureCard}>
-              <Typography
-                variant="h1"
-                align="center"
-                style={styles.featureIcon}
-              >
-                🤖
-              </Typography>
-              <Typography
-                variant="h6"
-                weight="semibold"
-                align="center"
-                color="gray900"
-                style={styles.featureTitle}
-              >
-                AI Recognition
-              </Typography>
-              <Typography variant="body2" align="center" color="gray600">
-                Advanced AI identifies food and calculates calories
-              </Typography>
-            </Card>
-          </View>
-
-          <View style={styles.featureWrapper}>
-            <Card variant="elevated" padding={5} style={styles.featureCard}>
-              <Typography
-                variant="h1"
-                align="center"
-                style={styles.featureIcon}
-              >
-                📊
-              </Typography>
-              <Typography
-                variant="h6"
-                weight="semibold"
-                align="center"
-                color="gray900"
-                style={styles.featureTitle}
-              >
-                Progress Tracking
-              </Typography>
-              <Typography variant="body2" align="center" color="gray600">
-                Monitor your daily nutrition and health goals
-              </Typography>
-            </Card>
-          </View>
         </View>
       </View>
 
@@ -167,7 +94,8 @@ const styles = StyleSheet.create({
   header: {
     paddingHorizontal: tokens.spacing[6],
     paddingTop: tokens.spacing[5],
-    paddingBottom: tokens.spacing[10],
+    paddingBottom: 24,
+    marginTop: tokens.spacing[10],
   },
   logoContainer: {
     flexDirection: 'row',
@@ -175,7 +103,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   logoIcon: {
+    width: 48,
+    height: 48,
     marginRight: tokens.spacing[3],
+    resizeMode: 'contain',
   },
   content: {
     flex: 1,
@@ -210,7 +141,7 @@ const styles = StyleSheet.create({
   },
   bottomSection: {
     paddingHorizontal: tokens.spacing[6],
-    paddingBottom: tokens.spacing[8],
+    paddingBottom: 48,
     justifyContent: 'flex-end',
   },
   termsText: {

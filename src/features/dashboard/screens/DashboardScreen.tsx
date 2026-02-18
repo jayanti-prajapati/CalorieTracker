@@ -99,8 +99,11 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerLeft}>
-            <Text style={styles.appIcon}>🍎</Text>
-            <Text style={styles.appName}>Cal AI</Text>
+            <Image
+              source={require('../../../assets/logo.png')}
+              style={styles.logoIcon}
+            />
+            <Text style={styles.appName}>CalShotAI</Text>
           </View>
           <View style={styles.streakBadge}>
             <Text style={styles.streakIcon}>🔥</Text>
@@ -430,6 +433,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 8,
+  },
+  logoIcon: {
+    width: 32,
+    height: 32,
+    marginEnd: 4,
   },
   proteinCircle: {
     borderColor: '#FF6B6B',

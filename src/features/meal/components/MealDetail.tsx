@@ -194,7 +194,7 @@ export const MealDetail: React.FC<MealDetailProps> = ({
             <View style={styles.aiIcon}>
               <Text style={styles.aiIconText}>✨</Text>
             </View>
-            <Text style={styles.aiFeedbackText}>How did Cal AI do?</Text>
+            <Text style={styles.aiFeedbackText}>How did CalShotAI do?</Text>
           </View>
 
           <View style={styles.ratingButtons}>

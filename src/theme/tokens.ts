@@ -3,45 +3,45 @@
 export const tokens = {
     // Color Palette
     colors: {
-        // Brand Colors
+        // Brand Colors - Black/White/Gray with Green Accent
         brand: {
-            primary: '#4CAF50',
-            primaryDark: '#388E3C',
-            primaryLight: '#81C784',
-            secondary: '#FF9800',
-            accent: '#03DAC6',
+            primary: '#1A1A1A',
+            primaryDark: '#000000',
+            primaryLight: '#424242',
+            secondary: '#4CAF50',
+            accent: '#4CAF50',
         },
 
-        // Semantic Colors
+        // Semantic Colors - Monochromatic with Strategic Color
         semantic: {
             success: '#4CAF50',
-            warning: '#FF9800',
-            error: '#F44336',
-            info: '#2196F3',
+            warning: '#6C757D',
+            error: '#1A1A1A',
+            info: '#ADB5BD',
         },
 
-        // Nutrition Colors
+        // Nutrition Colors - Black/White/Gray Theme
         nutrition: {
-            calories: '#FF6B35',
-            protein: '#E91E63',
-            carbs: '#FF9800',
-            fat: '#2196F3',
-            water: '#03DAC6',
+            calories: '#1A1A1A',
+            protein: '#4CAF50',
+            carbs: '#6C757D',
+            fat: '#ADB5BD',
+            water: '#4CAF50',
         },
 
-        // Neutral Colors
+        // Neutral Colors - Enhanced Black/White/Gray Scale
         neutral: {
             white: '#FFFFFF',
-            gray50: '#FAFAFA',
-            gray100: '#F5F5F5',
-            gray200: '#EEEEEE',
-            gray300: '#E0E0E0',
-            gray400: '#BDBDBD',
-            gray500: '#9E9E9E',
-            gray600: '#757575',
-            gray700: '#616161',
-            gray800: '#424242',
-            gray900: '#212121',
+            gray50: '#F8F9FA',
+            gray100: '#F1F3F4',
+            gray200: '#E9ECEF',
+            gray300: '#DEE2E6',
+            gray400: '#CED4DA',
+            gray500: '#ADB5BD',
+            gray600: '#6C757D',
+            gray700: '#495057',
+            gray800: '#343A40',
+            gray900: '#1A1A1A',
             black: '#000000',
         },
     },

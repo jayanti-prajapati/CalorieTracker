@@ -11,7 +11,13 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '../../../types';
 import { useAuthStore } from '../stores/authStore';
-import { Button, Typography, Input, Card } from '../../../components/ui';
+import {
+  Button,
+  Typography,
+  Input,
+  Card,
+  GoogleLogo,
+} from '../../../components/ui';
 import { tokens } from '../../../theme/tokens';
 
 type SignInScreenNavigationProp = NativeStackNavigationProp<
@@ -88,9 +94,7 @@ const SignInScreen: React.FC = () => {
             disabled={isLoading}
             activeOpacity={0.8}
           >
-            <Typography variant="h4" weight="bold" style={styles.googleIcon}>
-              G
-            </Typography>
+            <GoogleLogo size={20} />
             <Typography variant="body1" weight="semibold" color="white">
               {isLoading ? 'Signing In...' : 'Continue with Google'}
             </Typography>
@@ -167,9 +171,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: tokens.colors.brand.primary,
-    paddingVertical: tokens.spacing[4],
-    paddingHorizontal: tokens.spacing[8],
-    borderRadius: tokens.borderRadius.lg,
+    paddingVertical: 4,
+    paddingHorizontal: 18,
+    borderRadius: 24,
     marginBottom: tokens.spacing[6],
     minHeight: 56,
     ...tokens.shadows.lg,

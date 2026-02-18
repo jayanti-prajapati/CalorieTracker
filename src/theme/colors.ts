@@ -1,73 +1,73 @@
 export const lightColors = {
-    primary: '#4CAF50',
-    primaryDark: '#388E3C',
-    primaryLight: '#81C784',
-    secondary: '#FF9800',
-    secondaryDark: '#F57C00',
-    secondaryLight: '#FFB74D',
+    primary: '#1A1A1A',
+    primaryDark: '#000000',
+    primaryLight: '#424242',
+    secondary: '#4CAF50',
+    secondaryDark: '#388E3C',
+    secondaryLight: '#81C784',
 
     background: '#FFFFFF',
-    surface: '#F5F5F5',
+    surface: '#F8F9FA',
     card: '#FFFFFF',
 
-    text: '#212121',
-    textSecondary: '#757575',
-    textLight: '#BDBDBD',
+    text: '#1A1A1A',
+    textSecondary: '#6C757D',
+    textLight: '#ADB5BD',
 
     success: '#4CAF50',
-    warning: '#FF9800',
-    error: '#F44336',
-    info: '#2196F3',
+    warning: '#FFC107',
+    error: '#DC3545',
+    info: '#6C757D',
 
-    border: '#E0E0E0',
-    divider: '#EEEEEE',
+    border: '#E9ECEF',
+    divider: '#F1F3F4',
 
     // Calorie tracking specific colors
-    calories: '#FF6B35',
+    calories: '#1A1A1A',
     protein: '#4CAF50',
-    carbs: '#2196F3',
-    fat: '#FF9800',
-    water: '#03DAC6',
+    carbs: '#6C757D',
+    fat: '#ADB5BD',
+    water: '#4CAF50',
 
     // Progress colors
-    progressBackground: '#E0E0E0',
-    progressFill: '#4CAF50',
+    progressBackground: '#E9ECEF',
+    progressFill: '#1A1A1A',
 } as const;
 
 export const darkColors = {
-    primary: '#66BB6A',
-    primaryDark: '#4CAF50',
-    primaryLight: '#81C784',
-    secondary: '#FFB74D',
-    secondaryDark: '#FF9800',
-    secondaryLight: '#FFCC02',
+    primary: '#FFFFFF',
+    primaryDark: '#F8F9FA',
+    primaryLight: '#E9ECEF',
+    secondary: '#4CAF50',
+    secondaryDark: '#388E3C',
+    secondaryLight: '#81C784',
 
-    background: '#121212',
-    surface: '#1E1E1E',
-    card: '#2D2D2D',
+    background: '#1A1A1A',
+    surface: '#2D2D2D',
+    card: '#424242',
 
     text: '#FFFFFF',
-    textSecondary: '#AAAAAA',
-    textLight: '#666666',
+    textSecondary: '#ADB5BD',
+    textLight: '#6C757D',
 
-    success: '#66BB6A',
-    warning: '#FFB74D',
-    error: '#EF5350',
-    info: '#42A5F5',
+    success: '#4CAF50',
+    warning: '#FFC107',
+    error: '#DC3545',
+    info: '#ADB5BD',
 
-    border: '#333333',
+    border: '#424242',
     divider: '#2D2D2D',
 
     // Calorie tracking specific colors
-    calories: '#FF8A65',
-    protein: '#66BB6A',
-    carbs: '#42A5F5',
-    fat: '#FFB74D',
-    water: '#4DD0E1',
+    calories: '#FFFFFF',
+    protein: '#4CAF50',
+    carbs: '#ADB5BD',
+    fat: '#6C757D',
+    water: '#4CAF50',
 
     // Progress colors
-    progressBackground: '#333333',
-    progressFill: '#66BB6A',
+    progressBackground: '#424242',
+    progressFill: '#FFFFFF',
 } as const;
 
 export interface Colors {
