@@ -43,13 +43,13 @@ const LandingScreen: React.FC = () => {
       <View style={styles.content}>
         <View style={styles.heroSection}>
           <Typography
-            variant="h1"
+            variant="h3"
             weight="bold"
             align="center"
             color="gray900"
-            style={styles.heroTitle}
+            style={{ fontSize: 28 }}
           >
-            Track Your Calories{'\n'}with AI Power
+            AI-Powered. {`\n`} Snap. Track. Transform.
           </Typography>
           <Typography
             variant="body1"
@@ -114,15 +114,13 @@ const styles = StyleSheet.create({
   },
   heroSection: {
     alignItems: 'center',
-    marginBottom: tokens.spacing[16],
-    borderTopWidth: 1,
-    borderTopColor: tokens.colors.neutral.gray200,
-    paddingTop: 8,
+    marginBottom: tokens.spacing[4],
   },
   heroTitle: {
     marginBottom: tokens.spacing[2],
   },
   heroSubtitle: {
+    marginTop: tokens.spacing[4],
     paddingHorizontal: tokens.spacing[5],
   },
   featuresContainer: {
