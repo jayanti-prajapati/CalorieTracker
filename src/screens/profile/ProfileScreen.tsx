@@ -19,6 +19,8 @@ import {
   Heart,
   Check,
   Crown,
+  LogOut,
+  Trash2,
 } from 'lucide-react-native';
 import { tokens } from '../../theme/tokens';
 import { PROFILE_SECTIONS } from './ProfileSections';
@@ -32,7 +34,7 @@ type ProfileScreenNavigationProp = NativeStackNavigationProp<
 
 const ProfileScreen: React.FC = () => {
   const navigation = useNavigation<ProfileScreenNavigationProp>();
-  const { user } = useAuthStore();
+  const { user, logout } = useAuthStore();
 
   const handleNavigate = (route: keyof ProfileStackParamList | null) => {
     if (route && route !== 'ProfileMain') {
@@ -40,7 +42,17 @@ const ProfileScreen: React.FC = () => {
     }
   };
 
-  const getIcon = (iconName: string, size: number = 20, color: string = tokens.colors.neutral.gray900) => {
+  const handleActionPress = (actionId: string) => {
+    if (actionId === 'logout') {
+      logout();
+    }
+  };
+
+  const getIcon = (
+    iconName: string,
+    size: number = 20,
+    color: string = tokens.colors.neutral.gray900,
+  ) => {
     switch (iconName) {
       case 'id-card':
         return <UserCircle size={size} color={color} />;
@@ -52,6 +64,11 @@ const ProfileScreen: React.FC = () => {
         return <UsersIcon size={size} color={color} />;
       case 'heart':
         return <Heart size={size} color={color} />;
+
+      case 'log-out':
+        return <LogOut size={size} color={color} />;
+      case 'trash-2':
+        return <Trash2 size={size} color={color} />;
       default:
         return <UserCircle size={size} color={color} />;
     }
@@ -59,8 +76,14 @@ const ProfileScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor={tokens.colors.neutral.gray50} />
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+      <StatusBar
+        barStyle="dark-content"
+        backgroundColor={tokens.colors.neutral.gray50}
+      />
+      <ScrollView
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+      >
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Profile</Text>
         </View>
@@ -73,7 +96,12 @@ const ProfileScreen: React.FC = () => {
             <View style={styles.userDetails}>
               <View style={styles.nameContainer}>
                 {user?.isPremium && (
-                  <Crown size={16} color="#FFD700" fill="#FFD700" style={styles.crownIcon} />
+                  <Crown
+                    size={16}
+                    color="#FFD700"
+                    fill="#FFD700"
+                    style={styles.crownIcon}
+                  />
                 )}
                 <Text style={styles.premiumBadge}>Premium</Text>
               </View>
@@ -107,9 +135,12 @@ const ProfileScreen: React.FC = () => {
               key={item.id}
               style={[
                 styles.menuItem,
-                index === PROFILE_SECTIONS.account.length - 1 && styles.lastMenuItem,
+                index === PROFILE_SECTIONS.account.length - 1 &&
+                  styles.lastMenuItem,
               ]}
-              onPress={() => handleNavigate(item.route as keyof ProfileStackParamList | null)}
+              onPress={() =>
+                handleNavigate(item.route as keyof ProfileStackParamList | null)
+              }
             >
               <View style={styles.menuItemLeft}>
                 {getIcon(item.icon)}
@@ -122,7 +153,7 @@ const ProfileScreen: React.FC = () => {
 
         <Text style={styles.sectionTitle}>Goals & Tracking</Text>
         <View style={styles.section}>
-          {PROFILE_SECTIONS.goalsTracking.map((item) => (
+          {PROFILE_SECTIONS.goalsTracking.map(item => (
             <TouchableOpacity key={item.id} style={styles.menuItem}>
               <View style={styles.menuItemLeft}>
                 {getIcon(item.icon)}
@@ -131,6 +162,32 @@ const ProfileScreen: React.FC = () => {
               <View style={styles.connectedBadge}>
                 <Check size={14} color={tokens.colors.semantic.success} />
                 <Text style={styles.connectedText}>{item.status}</Text>
+              </View>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        <Text style={styles.sectionTitle}>Account Actions</Text>
+        <View style={styles.section}>
+          {PROFILE_SECTIONS.accountActions.map(item => (
+            <TouchableOpacity
+              onPress={() => handleActionPress(item.id)}
+              key={item.id}
+              style={{
+                ...styles.menuItem,
+                ...(item.isDanger
+                  ? {
+                      backgroundColor: '#f7b2b2ff',
+                      borderWidth: 1,
+                      borderColor: '#ee4141ff',
+                      borderRadius: 8,
+                    }
+                  : {}),
+              }}
+            >
+              <View style={styles.menuItemLeft}>
+                {getIcon(item.icon)}
+                <Text style={styles.menuItemText}>{item.title}</Text>
               </View>
             </TouchableOpacity>
           ))}

@@ -38,4 +38,21 @@ export const PROFILE_SECTIONS = {
             isConnected: true,
         },
     ],
+    accountActions: [
+        {
+            id: 'logout',
+            title: 'Logout',
+            icon: 'log-out',
+            status: 'Logout',
+            isConnected: false,
+        },
+        {
+            id: 'delete-account',
+            title: 'Delete Account',
+            icon: 'trash-2',
+            status: 'Delete',
+            isConnected: false,
+            isDanger: true,
+        },
+    ],
 };
