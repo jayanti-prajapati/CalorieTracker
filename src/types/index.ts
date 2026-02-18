@@ -1,4 +1,11 @@
 
+// Navigation types
+export type RootStackParamList = {
+    Auth: undefined;
+    Onboarding: undefined;
+    Main: undefined;
+};
+
 // API types (for future use)
 export interface ApiResponse<T> {
     data: T;

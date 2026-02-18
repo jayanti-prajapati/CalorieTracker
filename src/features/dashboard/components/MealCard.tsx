@@ -1,54 +1,64 @@
 import { MealEntry } from '../../meal/types';
 import { timeToMinutesAgo } from '../../../utils';
-import { View, Image, Text, StyleSheet } from 'react-native';
+import { View, Image, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Flame, Beef, Wheat, Droplets } from 'lucide-react-native';
 
-export const MealCard = ({ meal }: { meal: MealEntry }) => {
+interface MealCardProps {
+  meal: MealEntry;
+  onPress?: () => void;
+}
+
+export const MealCard = ({ meal, onPress }: MealCardProps) => {
   return (
-    <View style={styles.mealCard}>
-      {/* Left Image - 40% */}
-      <View style={styles.imageContainer}>
-        {meal?.imageUrl ? (
-          <Image source={{ uri: meal.imageUrl }} style={styles.mealCardImage} />
-        ) : (
-          <View style={styles.mealCardImagePlaceholder}>
-            <Text style={styles.mealCardImageText}>🍽️</Text>
+    <TouchableOpacity onPress={onPress}>
+      <View style={styles.mealCard}>
+        {/* Left Image - 40% */}
+        <View style={styles.imageContainer}>
+          {meal?.imageUrl ? (
+            <Image
+              source={{ uri: meal.imageUrl }}
+              style={styles.mealCardImage}
+            />
+          ) : (
+            <View style={styles.mealCardImagePlaceholder}>
+              <Text style={styles.mealCardImageText}>🍽️</Text>
+            </View>
+          )}
+        </View>
+
+        {/* Right Content - 60% */}
+        <View style={styles.mealCardContent}>
+          <View style={styles.mealCardHeader}>
+            <Text style={styles.mealCardName} numberOfLines={2}>
+              {meal.name}
+            </Text>
+            <Text style={styles.mealCardTime}>
+              {timeToMinutesAgo(new Date(meal?.date))}
+            </Text>
           </View>
-        )}
+
+          <View style={styles.mealCardCalories}>
+            <Flame size={16} color="#E65100" style={styles.iconSpacing} />
+            <Text style={styles.mealCardCalorieText}>{meal?.calories} cal</Text>
+          </View>
+
+          <View style={styles.mealCardMacros}>
+            <View style={styles.macroItem}>
+              <Beef size={14} color="#8B4513" style={styles.iconSpacing} />
+              <Text style={styles.macroAmount}>{meal?.protein}g</Text>
+            </View>
+            <View style={styles.macroItem}>
+              <Wheat size={14} color="#DAA520" style={styles.iconSpacing} />
+              <Text style={styles.macroAmount}>{meal?.carbs}g</Text>
+            </View>
+            <View style={styles.macroItem}>
+              <Droplets size={14} color="#4682B4" style={styles.iconSpacing} />
+              <Text style={styles.macroAmount}>{meal?.fat}g</Text>
+            </View>
+          </View>
+        </View>
       </View>
-
-      {/* Right Content - 60% */}
-      <View style={styles.mealCardContent}>
-        <View style={styles.mealCardHeader}>
-          <Text style={styles.mealCardName} numberOfLines={2}>
-            {meal.name}
-          </Text>
-          <Text style={styles.mealCardTime}>
-            {timeToMinutesAgo(new Date(meal?.date))}
-          </Text>
-        </View>
-
-        <View style={styles.mealCardCalories}>
-          <Flame size={16} color="#E65100" style={styles.iconSpacing} />
-          <Text style={styles.mealCardCalorieText}>{meal?.calories} cal</Text>
-        </View>
-
-        <View style={styles.mealCardMacros}>
-          <View style={styles.macroItem}>
-            <Beef size={14} color="#8B4513" style={styles.iconSpacing} />
-            <Text style={styles.macroAmount}>{meal?.protein}g</Text>
-          </View>
-          <View style={styles.macroItem}>
-            <Wheat size={14} color="#DAA520" style={styles.iconSpacing} />
-            <Text style={styles.macroAmount}>{meal?.carbs}g</Text>
-          </View>
-          <View style={styles.macroItem}>
-            <Droplets size={14} color="#4682B4" style={styles.iconSpacing} />
-            <Text style={styles.macroAmount}>{meal?.fat}g</Text>
-          </View>
-        </View>
-      </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 const styles = StyleSheet.create({

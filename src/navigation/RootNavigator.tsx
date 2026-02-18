@@ -5,7 +5,7 @@ import { RootStackParamList } from '../types';
 import { useAuthStore } from '../features/auth/stores/authStore';
 
 import AuthNavigator from './AuthNavigator';
-import MainNavigator from './MainNavigator';
+import AppStackNavigator from './AppStackNavigator';
 import OnboardingNavigator from './OnboardingNavigator';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -27,7 +27,7 @@ const RootNavigator: React.FC = () => {
         ) : !user?.isOnboarded ? (
           <Stack.Screen name="Onboarding" component={OnboardingNavigator} />
         ) : (
-          <Stack.Screen name="Main" component={MainNavigator} />
+          <Stack.Screen name="Main" component={AppStackNavigator} />
         )}
       </Stack.Navigator>
     </NavigationContainer>

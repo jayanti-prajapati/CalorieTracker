@@ -23,6 +23,10 @@ export interface MealEntry {
     date: string; // ISO date string
     createdAt: string;
 
+    // AI feedback fields
+    aiRating?: 'up' | 'down';
+    aiRatedAt?: string;
+
 }
 
 export interface WaterEntry {

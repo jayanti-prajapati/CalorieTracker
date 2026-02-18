@@ -17,16 +17,23 @@ import { timeToMinutesAgo } from '../../../utils';
 import { Card } from '../../../components/ui';
 import { MealCard } from '../components/MealCard';
 import { WeeklyCalendar } from '../components/WeeklyCalendar';
-import { HealthCard } from '../components';
+import { HealthCard, MealDetail } from '../components';
+import { MealEntry } from '../../meal/types';
 
-const DashboardScreen: React.FC = () => {
+interface DashboardScreenProps {
+  navigation: {
+    navigate: (screen: string, params?: any) => void;
+  };
+}
+
+const DashboardScreen: React.FC<DashboardScreenProps> = ({ navigation }) => {
   const { user } = useAuthStore();
   const {
     data: dashboardData,
     selectedDate: storeSelectedDate,
     isRefreshing,
     setSelectedDate: setStoreSelectedDate,
-    refreshDashboard, 
+    refreshDashboard,
   } = useDashboardStore();
   const { meals } = useMealStore();
   console.log(meals);
@@ -41,6 +48,11 @@ const DashboardScreen: React.FC = () => {
   }, [selectedDate, storeSelectedDate, setStoreSelectedDate]);
 
   const today = selectedDate.toISOString().split('T')[0];
+
+  // Navigation handlers
+  const handleMealPress = (meal: MealEntry) => {
+    navigation.navigate('MealDetail', { mealId: meal.id });
+  };
 
   // Use dashboard data from store, fallback to default values
   const dailyNutrition = dashboardData?.stats
@@ -220,7 +232,13 @@ const DashboardScreen: React.FC = () => {
         {/* Recently uploaded */}
         <View style={styles.recentMealsContainer}>
           <Text style={styles.recentMealsTitle}>Recently uploaded</Text>
-          {meals?.map(meal => <MealCard key={meal.id} meal={meal} />) || (
+          {meals?.map(meal => (
+            <MealCard
+              key={meal.id}
+              meal={meal}
+              onPress={() => handleMealPress(meal)}
+            />
+          )) || (
             <View style={styles.emptyMealsContainer}>
               <Text style={styles.emptyMealsText}>No meals logged today</Text>
               <Text style={styles.emptyMealsSubtext}>
