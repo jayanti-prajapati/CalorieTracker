@@ -98,14 +98,14 @@ const styles = StyleSheet.create({
     marginTop: tokens.spacing[10],
   },
   logoContainer: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
   },
   logoIcon: {
-    width: 48,
-    height: 48,
-    marginRight: tokens.spacing[3],
+    width: 78,
+    height: 78,
+    marginBottom: 4,
     resizeMode: 'contain',
   },
   content: {
@@ -115,9 +115,12 @@ const styles = StyleSheet.create({
   heroSection: {
     alignItems: 'center',
     marginBottom: tokens.spacing[16],
+    borderTopWidth: 1,
+    borderTopColor: tokens.colors.neutral.gray200,
+    paddingTop: 8,
   },
   heroTitle: {
-    marginBottom: tokens.spacing[4],
+    marginBottom: tokens.spacing[2],
   },
   heroSubtitle: {
     paddingHorizontal: tokens.spacing[5],
