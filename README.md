@@ -1,4 +1,4 @@
-# 🍎 CalorieTracker - AI-Powered Nutrition App
+# 🍎 CalorieTracker - AI-Powered Nutrition App -- ON HOLD (Booked)
 
 A modern React Native application for tracking calories and nutrition with AI-powered food recognition, built with TypeScript and featuring a beautiful, intuitive user interface.
 
